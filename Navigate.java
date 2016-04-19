@@ -6,7 +6,20 @@ import java.util.Arrays;
 
 public class Navigate {
 
+	private static int start_lat;
+    private static double start_lat_d;
+    private static int start_lon;
+    private static double start_lon_d;
+    private static int stop_lat;
+    private static double stop_lat_d;
+    private static int stop_lon;
+    private static double stop_lon_d;
+
 	private final static double EARTH_RADIUS = 6378.388;
+	private final static int FAKTOR = 1000000;
+    private final static int MAX_SPEED_FOR_LINEAR_DISTANCE = 100;	
+	private final static String TURNS_TXT = "Turns.txt";
+	private final static String ROUTE_TXT = "Route.txt";
 
 	public static void main(String[] args) {
 	
@@ -17,14 +30,22 @@ public class Navigate {
 		try
 		{
 		
-			NavData  nd = new NavData(args[0],true);
-		
+			NavData  nd = new NavData(args[0],true);		
 			Node [] openNodeList = new Node [nd.getCrossingCount()];
 
+			// convert coords into an int value by multiplying with a faktor			
+			start_lat_d = Double.parseDouble(args[1]);
+			start_lat = (int)(start_lat_d*FAKTOR);
+			start_lon_d = Double.parseDouble(args[2]);			
+			start_lon = (int)(start_lon_d*FAKTOR);			
+			stop_lat_d = Double.parseDouble(args[3]);
+			stop_lat = (int)(stop_lat_d*FAKTOR);
+			stop_lon_d = Double.parseDouble(args[4]);
+			stop_lon = (int)(stop_lon_d*FAKTOR);
 			
 			////TEST
 			Node start = new Node(nd, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]));
-			start.f = 20;
+			/* start.Value_c() = 20;
 		
 			Node eins = new Node();
 			eins.f = 12;
@@ -33,7 +54,7 @@ public class Navigate {
 			zwei.f = 14;
 		
 			Node drei = new Node();
-			drei.f = 2;
+			drei.f = 2; */
 /* 			int test = (int)Math.ceil((double)0/2);
 			
 			System.out.println(test);
@@ -43,7 +64,7 @@ public class Navigate {
 			// start position
             int nearestCrossingID = nd.getNearestCrossing(start_lat,start_lon);
 		 
-			pushNode(openNodeList, start);
+			/* pushNode(openNodeList, start);
 			printArray (openNodeList);
 			pushNode(openNodeList, drei);
 			printArray (openNodeList);
@@ -60,7 +81,7 @@ public class Navigate {
 			printArray (openNodeList);
 			deleteNode(openNodeList);
 			printArray (openNodeList);
-			System.out.println("ENDE!");
+			System.out.println("ENDE!"); */
 		
 			////TEST
 			
