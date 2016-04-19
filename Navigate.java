@@ -119,7 +119,7 @@ public class Navigate {
 		if (openNodeList[0] == null){
 			openNodeList[0] = newOpenNode;
 		}
-		else if (openNodeList[nextFreePos-1].f <= newOpenNode.f){
+		else if (openNodeList[nextFreePos-1].Value_f() <= newOpenNode.Value_f()){
 			openNodeList[nextFreePos] = newOpenNode;
 		}
 		//ansonsten binäre suche
@@ -146,19 +146,19 @@ public class Navigate {
 					
 					System.out.println("insertPosition in binarySearch: " + insertPosition);
 				
-					if(openNodeList[insertPosition].f <= newOpenNode.f){
+					if(openNodeList[insertPosition].Value_f() <= newOpenNode.Value_f()){
 						l = insertPosition+1;
 					}
 					else {
 						r = insertPosition-1;
 					}
 				}
-				while (openNodeList[insertPosition].f != newOpenNode.f && l<=r);
+				while (openNodeList[insertPosition].Value_f() != newOpenNode.Value_f() && l<=r);
 				
 				// wenn das Element nicht gefunden wurde, dann richtige Einfügeposition überprüfen, an die das Element gehört
-				if (openNodeList[insertPosition].f != newOpenNode.f)
+				if (openNodeList[insertPosition].Value_f() != newOpenNode.Value_f())
 					{
-						if (openNodeList[insertPosition].f < newOpenNode.f)
+						if (openNodeList[insertPosition].Value_f() < newOpenNode.Value_f())
 						{
 							insertPosition++;
 						}
@@ -167,7 +167,7 @@ public class Navigate {
 				else
 					{
 						// (insertPosition > 0) Stellt sicher, dass wir nicht an content[-1] suchen
-						while (insertPosition > 0 && openNodeList[insertPosition].f == openNodeList[insertPosition - 1].f)
+						while (insertPosition > 0 && openNodeList[insertPosition].Value_f() == openNodeList[insertPosition - 1].Value_f())
 						{
 							insertPosition--;
 						}	
@@ -196,7 +196,7 @@ public class Navigate {
 		for (int i = 0; i<= openNodeList.length; i++)
 		{
 			if (openNodeList[i] != null){
-			System.out.println("position im Array: " + i + " vorhandene F: " + openNodeList[i].f);
+			System.out.println("position im Array: " + i + " vorhandene F: " + openNodeList[i].Value_f());
 			}
 			else{
 				break;
