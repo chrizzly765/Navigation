@@ -102,7 +102,7 @@ class Node{
 	 */
 	private void g()
 	{
-		value_g = predecessor.Value_g + value_c;
+		value_g = predecessor.Value_g() + value_c;
 	}
 	
 	/**
