@@ -224,7 +224,9 @@ public class Navigate {
         double cosG = Math.sin(latSource) * Math.sin(latDest) + Math.cos(latSource) * Math.cos(latDest) * Math.cos(lonDest - lonSource);
         return (EARTH_RADIUS * Math.acos(cosG)) * 1000;
     }
-}
+
+	
+	}
 
 
 
