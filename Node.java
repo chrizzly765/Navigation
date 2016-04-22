@@ -1,8 +1,10 @@
+import nav.NavData;
+
 class Node{
 	
 	private int [] links;
 	private int luftlinie;
-	private Node predecessor;
+	private Node predecessor = new Node();
 	private int crossingID;
 	private boolean statusOpen;
 	static NavData nd;
@@ -20,16 +22,19 @@ class Node{
 	public int Value_c()
 	{
 		return value_c;
-	}
-	
+	}	
 	public int Value_g()
 	{
 		return value_g;
 	}
-	int Value_f()
+	public int Value_f()
 	{
 		return value_f;
 	}
+	/* public int CrossingID(){
+		
+		return this.crossingID;
+	} */
 	
 	/***************************************
 	 * CONSTRUCTORS
@@ -40,11 +45,15 @@ class Node{
 	public Node(NavData nd, int latStart, int lonStart, int latZiel, int lonZiel){
 		nd = nd;
 		this.crossingID = nd.getNearestCrossing(latStart,lonStart);
+		
 		//Im Straßennetz?
 		if (nd.isIsolatedCrossiong(this.crossingID))
 		{
-			ziel.crossingID = nd.getNearestCrossing(latZiel,lonZiel);
+			// return error if not connected
+			//ziel.crossingID = nd.getNearestCrossing(latZiel,lonZiel);
 		}
+		
+		predecessor = new Node();
 	}
 	
 	/***************************************
@@ -62,7 +71,7 @@ class Node{
 	{
 		double costsToPredecessor;
 		int linkPredecessor = linkFromPredecessor();
-		int speedLimit = getMaxSpeedKMperHours(linkPredecessor);
+		int speedLimit = nd.getMaxSpeedKMperHours(linkPredecessor);
 		
 		//no explicit speed limitation
 		if(speedLimit == 0)
@@ -72,7 +81,7 @@ class Node{
 			//speedlimit = 
 		}
 		
-		value_c = getLengthMeters(linkPredecessor) / speedLimit;
+		value_c = nd.getLengthMeters(linkPredecessor) / speedLimit;
 	}
 	
 	/**
@@ -82,7 +91,7 @@ class Node{
 	{
 		for(int link : links)
 		{
-			if(getCrossingIDFrom(link) == predecessor.CrossingID)
+			if(nd.getCrossingIDFrom(link) == predecessor.crossingID)
 				return link;
 		}
 		return -1;
@@ -112,9 +121,12 @@ class Node{
 		if(predecessor == null || predecessor.crossingID != newPredecessor.crossingID)
 		{
 			predecessor = newPredecessor;
-			value_c = c();
+			/* value_c = c();
 			value_g = g();
-			value_f = f();
+			value_f = f(); */
+			c();
+			g();
+			f();
 		}
 	}
 }
