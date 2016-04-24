@@ -20,6 +20,8 @@ public class Navigate {
     private final static int MAX_SPEED_FOR_LINEAR_DISTANCE = 100;	
 	private final static String TURNS_TXT = "Turns.txt";
 	private final static String ROUTE_TXT = "Route.txt";
+	
+	public static NavData  nd;
 
 	public static void main(String[] args) {
 	
@@ -30,8 +32,8 @@ public class Navigate {
 		try
 		{
 		
-			NavData  nd = new NavData(args[0],true);		
-			Node [] openNodeList = new Node [nd.getCrossingCount()];
+			nd = new NavData(args[0],true);
+			
 
 			// convert coords into an int value by multiplying with a faktor			
 			start_lat_d = Double.parseDouble(args[1]);
@@ -45,6 +47,8 @@ public class Navigate {
 			
 			////TEST
 			Node start = new Node(nd, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]));
+			Node destination = start.destination;
+			
 			/* start.Value_c() = 20;
 		
 			Node eins = new Node();
@@ -98,7 +102,7 @@ public class Navigate {
 
 	}
 	
-	static void pushNode (Node [] openNodeList, Node newOpenNode){
+	public static void pushNode (Node [] openNodeList, Node newOpenNode){
 		System.out.println("ArrayPushSortBinarySearch");
 		
 		//nächste Freie Position des Arrays ermitteln
@@ -134,7 +138,7 @@ public class Navigate {
 		}
 	}
 		
-	static int binarySearch (Node [] openNodeList, Node newOpenNode, int nextFreePos){
+	public static int binarySearch (Node [] openNodeList, Node newOpenNode, int nextFreePos){
 						
 			int insertPosition = 0;
 			int l = 0;
@@ -176,7 +180,7 @@ public class Navigate {
 				return insertPosition;
 	}
 		
-	static void deleteNode (Node [] openNodeList){
+	public static void deleteNode (Node [] openNodeList){
 		
 		for (int i = 1; i<= openNodeList.length; i++)
 		{
@@ -224,6 +228,52 @@ public class Navigate {
         double cosG = Math.sin(latSource) * Math.sin(latDest) + Math.cos(latSource) * Math.cos(latDest) * Math.cos(lonDest - lonSource);
         return (EARTH_RADIUS * Math.acos(cosG)) * 1000;
     }
+
+	static boolean A_Star (Node start, Node destination){
+		
+		
+		Node currentNode = new Node();
+		Node [] openNodeList = new Node [nd.getCrossingCount()];
+		pushNode(openNodeList, start);
+		
+		do {
+			currentNode = openNodeList[0];
+			if (currentNode.crossingID == destination.crossingID)
+			{
+				return true;
+			}
+			deleteNode(openNodeList);
+			expand(openNodeList, currentNode);
+			currentNode.statusClosed = true;
+		}
+		while(openNodeList[0] != null);
+		
+		return false;
+	
+	}
+	
+	static void expand (Node [] openNodeList, Node currentNode){
+		
+		//Neighbors
+		for (int i = 0; i< currentNode.links.length; i++)
+		{
+			if(currentNode.links[i].statusClosed !== true)
+			{
+				for (int i=0; i< openNodeList.length; i++ )
+				{
+					
+				}
+			}
+			
+		}
+		
+		
+		
+		if (currentNode){
+			
+		}
+	}
+	
 }
 
 

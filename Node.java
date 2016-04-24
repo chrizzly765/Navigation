@@ -3,12 +3,12 @@ import nav.NavData;
 class Node{
 	
 	private int [] links;
-	private int luftlinie;
-	private Node predecessor;
-	private int crossingID;
-	private boolean statusOpen;
-	static NavData nd;
+	private int beeline;
+	private Node predecessor = new Node();
+	public int crossingID;
+	public boolean statusClosed = false;
 	public static Node destination = new Node();
+	NavData nd;
 	
 	private int value_c; // actual costs from predecessor to node
 	private int value_g; // actual costs from start to node
@@ -31,6 +31,10 @@ class Node{
 	{
 		return value_f;
 	}
+	/* public int CrossingID(){
+		
+		return this.crossingID;
+	} */
 	
 	/***************************************
 	 * CONSTRUCTORS
@@ -38,15 +42,15 @@ class Node{
 	
 	public Node (){}
 	
-	public Node(NavData nd, int latStart, int lonStart, int latZiel, int lonZiel){
-		nd = nd;
+	public Node(NavData nd_Node, int latStart, int lonStart, int latZiel, int lonZiel){
+		nd = nd_Node;
 		this.crossingID = nd.getNearestCrossing(latStart,lonStart);
 		
 		//Im Straßennetz?
 		if (nd.isIsolatedCrossiong(this.crossingID))
 		{
 			// return error if not connected
-			//ziel.crossingID = nd.getNearestCrossing(latZiel,lonZiel);
+			destination.crossingID = nd.getNearestCrossing(latZiel,lonZiel);
 		}
 		
 		predecessor = new Node();
@@ -87,7 +91,7 @@ class Node{
 	{
 		for(int link : links)
 		{
-			if(nd.getCrossingIDFrom(link) == predecessor.CrossingID)
+			if(nd.getCrossingIDFrom(link) == predecessor.crossingID)
 				return link;
 		}
 		return -1;
@@ -98,7 +102,7 @@ class Node{
 	 */
 	private void g()
 	{
-		value_g = predecessor.Value_g + value_c;
+		value_g = predecessor.Value_g() + value_c;
 	}
 	
 	/**
