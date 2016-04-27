@@ -6,6 +6,7 @@ import java.util.Arrays;
 
 public class Navigate {
 
+
 	private static int start_lat;
     private static double start_lat_d;
     private static int start_lon;
@@ -15,9 +16,8 @@ public class Navigate {
     private static int stop_lon;
     private static double stop_lon_d;
 
-	private final static double EARTH_RADIUS = 6378.388;
-	private final static int FAKTOR = 1000000;
-    private final static int MAX_SPEED_FOR_LINEAR_DISTANCE = 100;	
+	
+	public final static int FACTOR = 1000000;	
 	private final static String TURNS_TXT = "Turns.txt";
 	private final static String ROUTE_TXT = "Route.txt";
 	
@@ -31,78 +31,48 @@ public class Navigate {
         }
 		try
 		{
-		
 			nd = new NavData(args[0],true);
 			
-
 			// convert coords into an int value by multiplying with a faktor			
 			start_lat_d = Double.parseDouble(args[1]);
-			start_lat = (int)(start_lat_d*FAKTOR);
+			start_lat = (int)(start_lat_d*FACTOR);
 			start_lon_d = Double.parseDouble(args[2]);			
-			start_lon = (int)(start_lon_d*FAKTOR);			
+			start_lon = (int)(start_lon_d*FACTOR);			
 			stop_lat_d = Double.parseDouble(args[3]);
-			stop_lat = (int)(stop_lat_d*FAKTOR);
+			stop_lat = (int)(stop_lat_d*FACTOR);
 			stop_lon_d = Double.parseDouble(args[4]);
-			stop_lon = (int)(stop_lon_d*FAKTOR);
+			stop_lon = (int)(stop_lon_d*FACTOR);
 			
 			////TEST
 			Node start = new Node(nd, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]));
 			Node destination = start.destination;
 			
-			/* start.Value_c() = 20;
-		
-			Node eins = new Node();
-			eins.f = 12;
-
-			Node zwei = new Node();
-			zwei.f = 14;
-		
-			Node drei = new Node();
-			drei.f = 2; */
-/* 			int test = (int)Math.ceil((double)0/2);
-			
-			System.out.println(test);
-		 */
 			// start timer
             long startTime = System.currentTimeMillis();
 			// start position
             int nearestCrossingID = nd.getNearestCrossing(start_lat,start_lon);
-		 
-			/* pushNode(openNodeList, start);
-			printArray (openNodeList);
-			pushNode(openNodeList, drei);
-			printArray (openNodeList);
-			pushNode(openNodeList, zwei);
-			printArray (openNodeList);
-			pushNode(openNodeList, eins);
-			printArray (openNodeList);
-			
-			deleteNode(openNodeList);
-			printArray (openNodeList);
-			deleteNode(openNodeList);
-			printArray (openNodeList);
-			deleteNode(openNodeList);
-			printArray (openNodeList);
-			deleteNode(openNodeList);
-			printArray (openNodeList);
-			System.out.println("ENDE!"); */
 		
-			////TEST
 			
 			// stop timer
             long stopTime = System.currentTimeMillis();
             double elapsed = ((stopTime - startTime));
             System.out.println(stopTime + " - " + startTime + " = " + elapsed + "ms");
- 
 		}
-		
 		catch (Exception e) {
 		e.printStackTrace();
 		}
 
 	}
 	
-	public static void pushNode (Node [] openNodeList, Node newOpenNode){
+/* 	public static void pushNode(Node [] list, Node newNode){
+		
+		for (int i = 0; i<list.length; i++){
+			
+		}
+		newNode.toArray(list);
+	} */
+	
+	public static void pushNodeSorted (Node [] openNodeList, Node newOpenNode){
 		System.out.println("ArrayPushSortBinarySearch");
 		
 		//nächste Freie Position des Arrays ermitteln
@@ -234,7 +204,8 @@ public class Navigate {
 		
 		Node currentNode = new Node();
 		Node [] openNodeList = new Node [nd.getCrossingCount()];
-		pushNode(openNodeList, start);
+		boolean [] closedNodeList = new boolean [nd.getCrossingCount()];
+		pushNodeSorted(openNodeList, start);
 		
 		do {
 			currentNode = openNodeList[0];
@@ -243,8 +214,8 @@ public class Navigate {
 				return true;
 			}
 			deleteNode(openNodeList);
-			expand(openNodeList, currentNode);
-			currentNode.statusClosed = true;
+			expand(openNodeList, closedNodeList, currentNode);
+			currentNode.toArray(closedNodeList);
 		}
 		while(openNodeList[0] != null);
 		
@@ -252,28 +223,44 @@ public class Navigate {
 	
 	}
 	
-	static void expand (Node [] openNodeList, Node currentNode){
+	static void expand (Node [] openNodeList, boolean [] closedNodeList, Node currentNode){
 		
-		//Neighbors
-		for (int i = 0; i< currentNode.links.length; i++)
-		{
-			if(currentNode.links[i].statusClosed !== true)
-			{
-				for (int i=0; i< openNodeList.length; i++ )
-				{
-					
+		boolean found = false;
+		// Neighbors	
+		for (int i = 0; i< currentNode.links.length; i++) {
+			
+			crossingIDTo = nd.getCrossingIDTo(currentNode.links[i]);
+						
+			if(closedNodeList[crossingIDTo] == false) { 			
+				
+				for(int i=0; i<openNodeList.length || found == true; i++){
+					if(crossingIDTo == openNodeList[i].crossingID){
+						found = true;
+					}
 				}
 			}
 			
+			if(found == false || currentNode.Value_f() < openNodeList[i].F(currentNode)){
+				if (found == false){
+					Node newNeighbourNode = new Node(crossingIDTo, currentNode);
+					pushNodeSorted(openNodeList, newNeighbourNode);
+				}
+				else{
+					openNodeList[i].setPredecessor(currentNode);
+				}
+			}
 		}
 		
-		
-		
-		if (currentNode){
-			
-		}
 	}
 	
+	
+	public static int convertCoordToInt(double coordinate) {		
+		return (int)(coordinate*FACTOR);	
+	}
+	
+	public static double convertCoordToDouble(int coordinate) {		
+		return (double)(coordinate/FACTOR);	
+	}
 }
 
 

@@ -3,7 +3,7 @@ import nav.NavData;
 class Node{
 	
 	private int [] links;
-	private int beeline;
+	private int beeLine;
 	private Node predecessor = new Node();
 	public int crossingID;
 	public boolean statusClosed = false;
@@ -14,6 +14,9 @@ class Node{
 	private int value_g; // actual costs from start to node
 	private int value_f; // estimated costs total
 	private int value_h; // estimated costs from node to end
+	
+	private final static double EARTH_RADIUS = 6378.388;
+    private final static int MAX_SPEED_FOR_LINEAR_DISTANCE = 100;	
 	
 	/***************************************
 	 * PROPERTIES
@@ -31,7 +34,10 @@ class Node{
 	{
 		return value_f;
 	}
-	/* public int CrossingID(){
+	public int Value_h()
+	{
+		return value_h;
+	}		/* public int CrossingID(){
 		
 		return this.crossingID;
 	} */
@@ -40,9 +46,14 @@ class Node{
 	 * CONSTRUCTORS
 	 ***************************************/
 	
-	public Node (){}
+		public Node (int crossingID, Node predecessor){
+			this.crossingID = crossingID;
+			setPredecessor(predecessor);
+			getLinks();
+			h();
+		}
 	
-	public Node(NavData nd_Node, int latStart, int lonStart, int latZiel, int lonZiel){
+		public Node(NavData nd_Node, int latStart, int lonStart, int latZiel, int lonZiel){
 		nd = nd_Node;
 		this.crossingID = nd.getNearestCrossing(latStart,lonStart);
 		
@@ -53,7 +64,9 @@ class Node{
 			destination.crossingID = nd.getNearestCrossing(latZiel,lonZiel);
 		}
 		
-		predecessor = new Node();
+		setPredecessor(predecessor);
+		getLinks();
+		h();
 	}
 	
 	/***************************************
@@ -69,19 +82,46 @@ class Node{
 	 */
 	private void c()
 	{
-		double costsToPredecessor;
-		int linkPredecessor = linkFromPredecessor();
-		int speedLimit = nd.getMaxSpeedKMperHours(linkPredecessor);
-		
-		//no explicit speed limitation
-		if(speedLimit == 0)
-		{
-			//get speedlimitation from type of road
-			//TODO
-			//speedlimit = 
+		if (predecessor == null){
+			value_c = 0;
+		}
+		else{
+			double costsToPredecessor;
+			int linkPredecessor = linkFromPredecessor();
+			int speedLimit = nd.getMaxSpeedKMperHours(linkPredecessor);
+			
+			//no explicit speed limitation
+			if(speedLimit == 0)
+			{
+				//get speedlimitation from type of road
+				//TODO
+				//speedlimit = 
+			}
+			
+			value_c = nd.getLengthMeters(linkPredecessor) / speedLimit;
 		}
 		
-		value_c = nd.getLengthMeters(linkPredecessor) / speedLimit;
+	}
+	
+	private int c(Node pre)
+	{
+		if (pre == null){
+			return 0;
+		}
+		else{
+			int linkPredecessor = linkFromPredecessor(pre);
+			int speedLimit = nd.getMaxSpeedKMperHours(linkPredecessor);
+			
+			//no explicit speed limitation
+			if(speedLimit == 0)
+			{
+				//get speedlimitation from type of road
+				//TODO
+				//speedlimit = 
+			}
+			
+			return nd.getLengthMeters(linkPredecessor) / speedLimit;
+		}
 	}
 	
 	/**
@@ -97,13 +137,42 @@ class Node{
 		return -1;
 	}
 	
+	private int linkFromPredecessor(Node pre)
+	{
+		for(int link : links)
+		{
+			if(nd.getCrossingIDFrom(link) == pre.crossingID)
+				return link;
+		}
+		return -1;
+	}
+	
 	/**
 	 * sets costs of start to node
-	 */
-	private void g()
+	 */	private void g()
 	{
-		value_g = predecessor.Value_g() + value_c;
+		if (predecessor ==null)
+		{
+			value_g = 0;
+		}
+		else{
+			value_g = predecessor.Value_g() + value_c;
+		}
+		
 	}
+	
+	private int g(Node pre){
+		
+		if (pre ==null)
+		{
+			return value_g = 0;
+		}
+		else{
+			return pre.Value_g() + c(pre);
+		}
+	}
+	
+	
 	
 	/**
 	 * sets estimated costs of start to end by crossing node
@@ -111,6 +180,11 @@ class Node{
 	private void f()
 	{
 		value_f = value_g + value_h;
+	}
+	
+	public int F(Node pre)
+	{
+		return g(pre) + value_h;
 	}
 	
 	/**
@@ -129,4 +203,37 @@ class Node{
 			f();
 		}
 	}
+
+	private static double getBeeLineInMeter(double latSource, double lonSource, double latDest, double lonDest) {
+
+        latSource = Math.toRadians(latSource);
+        lonSource = Math.toRadians(lonSource);
+        latDest = Math.toRadians(latDest);
+        lonDest = Math.toRadians(lonDest);		
+
+        // maps.google: Strasse => 6,3km; Luftlinie => 5,52km
+        // cos(g) = cos(90° - lat1) * cos(90° - lat2) + sin(90° - lat1) * sin(90° - lat2) * cos(lon2 - lon1)
+        // vereinfacht => cos(g) = sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1)
+        double cosG = Math.sin(latSource) * Math.sin(latDest) + Math.cos(latSource) * Math.cos(latDest) * Math.cos(lonDest - lonSource);
+        //return Math.round((EARTH_RADIUS * Math.acos(cosG)) * 1000);
+		return (EARTH_RADIUS * Math.acos(cosG)) * 1000;
+    }
+		
+	// h = beeline from neighbor node to destination		
+	public void h(int crossingID, double stop_lat_d, double stop_lon_d) {	
+	
+		neighborLat = convertCoordToDouble(nd.getCrossingLatE6(crossingID));
+		neighborLon = convertCoordToDouble(nd.getCrossingLongE6(crossingID));				
+		System.out.println("Expand Neighbors lat/lon: " + neighborLat + "/" + neighborLon);
+		System.out.println("Expand Destination lat/lon: " + stop_lat_d + "/" + stop_lon_d);
+		
+		beeLine = getBeeLineInMeter(neighborLat,neighborLon,stop_lat_d,stop_lon_d);		
+		h = getLinkCostsInSeconds(beeLine, MAX_SPEED_FOR_LINEAR_DISTANCE);				
+		System.out.println("Expand Neighbors beeLine/h: " + beeLine + "/" + h);
+		
+		this.value_h = h;
+	
+	}
+	
+	
 }
