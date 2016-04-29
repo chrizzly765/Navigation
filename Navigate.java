@@ -6,7 +6,6 @@ import java.util.Arrays;
 
 public class Navigate {
 
-
 	private static int start_lat;
     private static double start_lat_d;
     private static int start_lon;
@@ -17,7 +16,6 @@ public class Navigate {
     private static double stop_lon_d;
 
 	
-	public final static int FACTOR = 1000000;	
 	private final static String TURNS_TXT = "Turns.txt";
 	private final static String ROUTE_TXT = "Route.txt";
 	
@@ -35,13 +33,13 @@ public class Navigate {
 			
 			// convert coords into an int value by multiplying with a faktor			
 			start_lat_d = Double.parseDouble(args[1]);
-			start_lat = (int)(start_lat_d*FACTOR);
+			start_lat = (int)(start_lat_d*Helper.FACTOR);
 			start_lon_d = Double.parseDouble(args[2]);			
-			start_lon = (int)(start_lon_d*FACTOR);			
+			start_lon = (int)(start_lon_d*Helper.FACTOR);			
 			stop_lat_d = Double.parseDouble(args[3]);
-			stop_lat = (int)(stop_lat_d*FACTOR);
+			stop_lat = (int)(stop_lat_d*Helper.FACTOR);
 			stop_lon_d = Double.parseDouble(args[4]);
-			stop_lon = (int)(stop_lon_d*FACTOR);
+			stop_lon = (int)(stop_lon_d*Helper.FACTOR);
 			
 			////TEST
 			Node start = new Node(nd, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]));
@@ -178,14 +176,9 @@ public class Navigate {
 		}
 	}
 
-	private static double getLinkCostsInSeconds(double distance, double speed) {
-
-        // 30km/h = 30000m / 3600s = 8,333m/s
-        // time = distance/speed => 70m/s : 8,333m/s = 8,4s
-        return (distance / ((speed * 1000) / 3600));
-    }
 	
-	private static double getLinearDistanceInMeter(double latSource, double lonSource, double latDest, double lonDest) {
+	
+	/* private static double getLinearDistanceInMeter(double latSource, double lonSource, double latDest, double lonDest) {
 
         latSource = Math.toRadians(latSource);
         lonSource = Math.toRadians(lonSource);
@@ -197,12 +190,12 @@ public class Navigate {
         // vereinfacht => cos(g) = sin(lat1) * sin(lat2) + cos(lat1) * cos(lat2) * cos(lon2 - lon1)
         double cosG = Math.sin(latSource) * Math.sin(latDest) + Math.cos(latSource) * Math.cos(latDest) * Math.cos(lonDest - lonSource);
         return (EARTH_RADIUS * Math.acos(cosG)) * 1000;
-    }
+    } */
 
 	static boolean A_Star (Node start, Node destination){
 		
 		
-		Node currentNode = new Node();
+		Node currentNode;// = new Node();
 		Node [] openNodeList = new Node [nd.getCrossingCount()];
 		boolean [] closedNodeList = new boolean [nd.getCrossingCount()];
 		pushNodeSorted(openNodeList, start);
@@ -215,7 +208,7 @@ public class Navigate {
 			}
 			deleteNode(openNodeList);
 			expand(openNodeList, closedNodeList, currentNode);
-			currentNode.toArray(closedNodeList);
+			closedNodeList[currentNode.crossingID] = true;//currentNode.toArray(closedNodeList);
 		}
 		while(openNodeList[0] != null);
 		
@@ -226,15 +219,17 @@ public class Navigate {
 	static void expand (Node [] openNodeList, boolean [] closedNodeList, Node currentNode){
 		
 		boolean found = false;
+		int[] tmpLinks = currentNode.getLinks();
+		int crossingIDTo;
 		// Neighbors	
-		for (int i = 0; i< currentNode.links.length; i++) {
+		for (int i = 0; i< tmpLinks.length; i++) {
 			
-			crossingIDTo = nd.getCrossingIDTo(currentNode.links[i]);
+			crossingIDTo = nd.getCrossingIDTo(tmpLinks[i]);
 						
 			if(closedNodeList[crossingIDTo] == false) { 			
 				
-				for(int i=0; i<openNodeList.length || found == true; i++){
-					if(crossingIDTo == openNodeList[i].crossingID){
+				for(int j=0; j < openNodeList.length || found == true; j++){
+					if(crossingIDTo == openNodeList[j].crossingID){
 						found = true;
 					}
 				}
@@ -254,13 +249,7 @@ public class Navigate {
 	}
 	
 	
-	public static int convertCoordToInt(double coordinate) {		
-		return (int)(coordinate*FACTOR);	
-	}
 	
-	public static double convertCoordToDouble(int coordinate) {		
-		return (double)(coordinate/FACTOR);	
-	}
 }
 
 

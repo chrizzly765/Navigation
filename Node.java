@@ -3,11 +3,11 @@ import nav.NavData;
 class Node{
 	
 	private int [] links;
-	private int beeLine;
-	private Node predecessor = new Node();
+	private double beeLine;
+	private Node predecessor;// = new Node();
 	public int crossingID;
 	public boolean statusClosed = false;
-	public static Node destination = new Node();
+	public static Node destination;// = new Node();
 	NavData nd;
 	
 	private int value_c; // actual costs from predecessor to node
@@ -49,7 +49,7 @@ class Node{
 		public Node (int crossingID, Node predecessor){
 			this.crossingID = crossingID;
 			setPredecessor(predecessor);
-			getLinks();
+			setLinks();
 			h();
 		}
 	
@@ -65,7 +65,7 @@ class Node{
 		}
 		
 		setPredecessor(predecessor);
-		getLinks();
+		setLinks();
 		h();
 	}
 	
@@ -73,8 +73,13 @@ class Node{
 	 * FUNCTIONS
 	 ***************************************/
 	
-	private void getLinks (){
+	private void setLinks (){
 		links = nd.getLinksForCrossing(this.crossingID);
+	}
+	
+	public int[] getLinks()
+	{
+		return links;
 	}
 	
 	/**
@@ -190,7 +195,7 @@ class Node{
 	/**
 	 * sets new predecessor and updates all depending values
 	 */
-	private void setPredecessor(Node newPredecessor)
+	public void setPredecessor(Node newPredecessor)
 	{
 		if(predecessor == null || predecessor.crossingID != newPredecessor.crossingID)
 		{
@@ -220,19 +225,18 @@ class Node{
     }
 		
 	// h = beeline from neighbor node to destination		
-	public void h(int crossingID, double stop_lat_d, double stop_lon_d) {	
-	
-		neighborLat = convertCoordToDouble(nd.getCrossingLatE6(crossingID));
-		neighborLon = convertCoordToDouble(nd.getCrossingLongE6(crossingID));				
+    public void h() //int crossingID, double stop_lat_d, double stop_lon_d) {	
+	{
+		double stop_lat_d = nd.getCrossingLatE6(destination.crossingID);
+		double stop_lon_d = nd.getCrossingLongE6(destination.crossingID);
+		double neighborLat = Helper.convertCoordToDouble(nd.getCrossingLatE6(this.crossingID));
+		double neighborLon = Helper.convertCoordToDouble(nd.getCrossingLongE6(this.crossingID));
+		
 		System.out.println("Expand Neighbors lat/lon: " + neighborLat + "/" + neighborLon);
 		System.out.println("Expand Destination lat/lon: " + stop_lat_d + "/" + stop_lon_d);
 		
 		beeLine = getBeeLineInMeter(neighborLat,neighborLon,stop_lat_d,stop_lon_d);		
-		h = getLinkCostsInSeconds(beeLine, MAX_SPEED_FOR_LINEAR_DISTANCE);				
-		System.out.println("Expand Neighbors beeLine/h: " + beeLine + "/" + h);
-		
-		this.value_h = h;
-	
+		this.value_h = (int)(Helper.getLinkCostsInSeconds(beeLine, MAX_SPEED_FOR_LINEAR_DISTANCE));//TODO ändern in double
 	}
 	
 	
