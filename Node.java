@@ -8,7 +8,7 @@ class Node{
 	public int crossingID;
 	public boolean statusClosed = false;
 	public static Node destination;// = new Node();
-	NavData nd;
+	public static NavData  nd;
 	
 	private int value_c; // actual costs from predecessor to node
 	private int value_g; // actual costs from start to node
@@ -37,10 +37,11 @@ class Node{
 	public int Value_h()
 	{
 		return value_h;
-	}		/* public int CrossingID(){
-		
-		return this.crossingID;
-	} */
+	}		
+	public Node Predecessor()
+	{
+		return predecessor;
+	}
 	
 	/***************************************
 	 * CONSTRUCTORS
@@ -48,24 +49,34 @@ class Node{
 	
 		public Node (int crossingID, Node predecessor){
 			this.crossingID = crossingID;
-			setPredecessor(predecessor);
 			setLinks();
-			h();
+			setPredecessor(predecessor);
+			
+			if(destination != null)
+				h();
 		}
 	
-		public Node(NavData nd_Node, int latStart, int lonStart, int latZiel, int lonZiel){
-		nd = nd_Node;
+		public Node(NavData nd_Node, int latStart, int lonStart, int latZiel, int lonZiel)
+		{
+		this.nd = nd_Node;		
+		System.out.println( "NODE constructor start: " + this.nd);
+		
 		this.crossingID = nd.getNearestCrossing(latStart,lonStart);
 		
+		System.out.println("NODE crossingID start: " + this.crossingID);
+		
+		
+		destination = new Node(this.nd.getNearestCrossing(latZiel,lonZiel), null);
+		
+		
 		//Im Straßennetz?
-		if (nd.isIsolatedCrossiong(this.crossingID))
+		if (this.nd.isIsolatedCrossiong(this.crossingID))
 		{
 			// return error if not connected
 			destination.crossingID = nd.getNearestCrossing(latZiel,lonZiel);
 		}
-		
-		setPredecessor(predecessor);
 		setLinks();
+		setPredecessor(null);
 		h();
 	}
 	
@@ -73,8 +84,11 @@ class Node{
 	 * FUNCTIONS
 	 ***************************************/
 	
-	private void setLinks (){
-		links = nd.getLinksForCrossing(this.crossingID);
+	private void setLinks ()
+	{
+		System.out.println("NODE nd: "+ this.nd);
+		links = this.nd.getLinksForCrossing(this.crossingID);
+		
 	}
 	
 	public int[] getLinks()
@@ -93,6 +107,7 @@ class Node{
 		else{
 			double costsToPredecessor;
 			int linkPredecessor = linkFromPredecessor();
+			System.out.println("NODE linkPredecessor: " +linkPredecessor);
 			int speedLimit = nd.getMaxSpeedKMperHours(linkPredecessor);
 			
 			//no explicit speed limitation
@@ -134,20 +149,32 @@ class Node{
 	 */
 	private int linkFromPredecessor()
 	{
+		/*System.out.println("NODE linkFromPredecessor() links: " + links);
 		for(int link : links)
 		{
-			if(nd.getCrossingIDFrom(link) == predecessor.crossingID)
+			//System.out.println("crossingID: " + this.crossingID + "link: " + link + " getCrossingIDFrom(link): " + nd.getCrossingIDFrom(link));
+			
+			System.out.println("getCrossingIDTo(link): " + nd.getCrossingIDTo(link) + " predecessor.crossingID: " + predecessor.crossingID);
+			if(nd.getCrossingIDTo(link) == predecessor.crossingID)
 				return link;
 		}
-		return -1;
+		return -1;*/
+		return linkFromPredecessor(predecessor);//HIER LIEGT DER HUND BEGRABEN
 	}
 	
 	private int linkFromPredecessor(Node pre)
 	{
+		System.out.println("links.Length: " + links.length);
+		int n = 0;
 		for(int link : links)
 		{
-			if(nd.getCrossingIDFrom(link) == pre.crossingID)
+			System.out.println("crossingID: " + this.crossingID + " " + n + " getCrossingIDTo(link): " + nd.getCrossingIDTo(link) + " predecessor.crossingID: " + pre.crossingID);
+			if(nd.getCrossingIDTo(link) == pre.crossingID)
+			{
+				System.out.println("abc");
 				return link;
+			}
+			n++;
 		}
 		return -1;
 	}
@@ -227,13 +254,14 @@ class Node{
 	// h = beeline from neighbor node to destination		
     public void h() //int crossingID, double stop_lat_d, double stop_lon_d) {	
 	{
-		double stop_lat_d = nd.getCrossingLatE6(destination.crossingID);
-		double stop_lon_d = nd.getCrossingLongE6(destination.crossingID);
+		System.out.println("NODE h(): " + destination);
+		double stop_lat_d = this.nd.getCrossingLatE6(destination.crossingID);
+		double stop_lon_d = this.nd.getCrossingLongE6(destination.crossingID);
 		double neighborLat = Helper.convertCoordToDouble(nd.getCrossingLatE6(this.crossingID));
 		double neighborLon = Helper.convertCoordToDouble(nd.getCrossingLongE6(this.crossingID));
 		
-		System.out.println("Expand Neighbors lat/lon: " + neighborLat + "/" + neighborLon);
-		System.out.println("Expand Destination lat/lon: " + stop_lat_d + "/" + stop_lon_d);
+		System.out.println("NODE Expand Neighbors lat/lon: " + neighborLat + "/" + neighborLon);
+		System.out.println("NODE Expand Destination lat/lon: " + stop_lat_d + "/" + stop_lon_d);
 		
 		beeLine = getBeeLineInMeter(neighborLat,neighborLon,stop_lat_d,stop_lon_d);		
 		this.value_h = (int)(Helper.getLinkCostsInSeconds(beeLine, MAX_SPEED_FOR_LINEAR_DISTANCE));//TODO ändern in double

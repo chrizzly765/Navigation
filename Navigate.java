@@ -4,6 +4,14 @@ import pp.dorenda.client2.additional.UniversalPainterWriter;
 import java.io.File;
 import java.util.Arrays;
 
+// compile
+// javac -cp .;nav.jar Navigate.java
+
+// run
+// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 49.46591000 11.15800500 49.94795167 10.07600667
+// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.46591000 11.15800500 49.453025 11.093324
+
+
 public class Navigate {
 
 	private static int start_lat;
@@ -24,12 +32,14 @@ public class Navigate {
 	public static void main(String[] args) {
 	
 		if (args.length < 1) {
-            System.out.println("usage NavDemo <navcache file>");
+            System.out.println("NAVIGATE usage NavDemo <navcache file>");
             System.exit(1);
         }
 		try
 		{
 			nd = new NavData(args[0],true);
+			
+			System.out.println("NAVIGATE nd" + nd);
 			
 			// convert coords into an int value by multiplying with a faktor			
 			start_lat_d = Double.parseDouble(args[1]);
@@ -42,8 +52,12 @@ public class Navigate {
 			stop_lon = (int)(stop_lon_d*Helper.FACTOR);
 			
 			////TEST
-			Node start = new Node(nd, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]));
+			//Node start = new Node(nd, Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]));
+			Node start = new Node(nd, start_lat, start_lon, stop_lat, stop_lon);
 			Node destination = start.destination;
+			
+			System.out.println("NAVIGATE start.getLinks(): " + start.getLinks());
+			System.out.println("NAVIGATE destination.getLinks(): " + destination.getLinks());
 			
 			// start timer
             long startTime = System.currentTimeMillis();
@@ -54,7 +68,20 @@ public class Navigate {
 			// stop timer
             long stopTime = System.currentTimeMillis();
             double elapsed = ((stopTime - startTime));
-            System.out.println(stopTime + " - " + startTime + " = " + elapsed + "ms");
+            System.out.println("NAVIGATE " + stopTime + " - " + startTime + " = " + elapsed + "ms");
+			
+			if(A_Star(start, destination))
+			{
+				if(destination.Predecessor() != null)
+					System.out.println("NAVIGATE destination.Predecessor.crossingID: " + destination.Predecessor().crossingID);
+				else
+					System.out.println("NAVIGATE no destination.predecessor");
+			}
+			else
+			{
+				System.out.println("NAVIGATE a start failed");
+			}
+			
 		}
 		catch (Exception e) {
 		e.printStackTrace();
@@ -70,8 +97,8 @@ public class Navigate {
 		newNode.toArray(list);
 	} */
 	
-	public static void pushNodeSorted (Node [] openNodeList, Node newOpenNode){
-		System.out.println("ArrayPushSortBinarySearch");
+	public static Node[] pushNodeSorted (Node [] openNodeList, Node newOpenNode){
+		System.out.println("NAVIGATE ArrayPushSortBinarySearch");
 		
 		//nächste Freie Position des Arrays ermitteln
 		
@@ -82,28 +109,34 @@ public class Navigate {
 			nextFreePos++;
 		}
 		
-		System.out.println("Free Position: " + nextFreePos);
+		System.out.println("NAVIGATE Free Position: " + nextFreePos);
 		
 		//INSERT POSITION SUCHEN
 		
 		//einfügen am letzten Platz falls es gleich größer ist
 		
-		if (openNodeList[0] == null){
+		if (openNodeList[0] == null)
+		{
+			
+			System.out.println("NAVIGATE Liste ist leer");
 			openNodeList[0] = newOpenNode;
+			System.out.println("NAVIGATE newOpenNode: " + newOpenNode);
+			System.out.println("NAVIGATE " + openNodeList[0]);
 		}
-		else if (openNodeList[nextFreePos-1].Value_f() <= newOpenNode.Value_f()){
+		else if (openNodeList[nextFreePos-1].Value_f() <= newOpenNode.Value_f())
+		{
 			openNodeList[nextFreePos] = newOpenNode;
 		}
 		//ansonsten binäre suche
 		else{
 			insertPosition = binarySearch(openNodeList, newOpenNode, nextFreePos);
 			for (int i = nextFreePos; i > insertPosition; i--){
-	
-			openNodeList[i] = openNodeList[i-1];
+				openNodeList[i] = openNodeList[i-1];
+			}
+			openNodeList[insertPosition] = newOpenNode;
 		}
-	
-		openNodeList[insertPosition] = newOpenNode;
-		}
+		
+		return openNodeList;
 	}
 		
 	public static int binarySearch (Node [] openNodeList, Node newOpenNode, int nextFreePos){
@@ -116,7 +149,7 @@ public class Navigate {
 				do{
 					insertPosition = (int)Math.ceil((double)(l + r) / 2);
 					
-					System.out.println("insertPosition in binarySearch: " + insertPosition);
+					System.out.println("NAVIGATE insertPosition in binarySearch: " + insertPosition);
 				
 					if(openNodeList[insertPosition].Value_f() <= newOpenNode.Value_f()){
 						l = insertPosition+1;
@@ -148,7 +181,7 @@ public class Navigate {
 				return insertPosition;
 	}
 		
-	public static void deleteNode (Node [] openNodeList){
+	public static Node[] deleteFirstNode (Node [] openNodeList){
 		
 		for (int i = 1; i<= openNodeList.length; i++)
 		{
@@ -160,15 +193,16 @@ public class Navigate {
 				break;
 			}
 		}
+		return openNodeList;
 	}
 	
 	//Für uns zur Testzwecken
 	static void printArray (Node [] openNodeList){
-		System.out.println("Print ARRAY");
+		System.out.println("NAVIGATE Print ARRAY");
 		for (int i = 0; i<= openNodeList.length; i++)
 		{
 			if (openNodeList[i] != null){
-			System.out.println("position im Array: " + i + " vorhandene F: " + openNodeList[i].Value_f());
+			System.out.println("NAVIGATE position im Array: " + i + " vorhandene F: " + openNodeList[i].Value_f());
 			}
 			else{
 				break;
@@ -198,7 +232,8 @@ public class Navigate {
 		Node currentNode;// = new Node();
 		Node [] openNodeList = new Node [nd.getCrossingCount()];
 		boolean [] closedNodeList = new boolean [nd.getCrossingCount()];
-		pushNodeSorted(openNodeList, start);
+		openNodeList = pushNodeSorted(openNodeList, start);
+		System.out.println("NAVIGATE openNodeList 0: " + openNodeList[0]);
 		
 		do {
 			currentNode = openNodeList[0];
@@ -206,7 +241,7 @@ public class Navigate {
 			{
 				return true;
 			}
-			deleteNode(openNodeList);
+			openNodeList = deleteFirstNode(openNodeList);
 			expand(openNodeList, closedNodeList, currentNode);
 			closedNodeList[currentNode.crossingID] = true;//currentNode.toArray(closedNodeList);
 		}
@@ -227,21 +262,39 @@ public class Navigate {
 			crossingIDTo = nd.getCrossingIDTo(tmpLinks[i]);
 						
 			if(closedNodeList[crossingIDTo] == false) { 			
-				
-				for(int j=0; j < openNodeList.length || found == true; j++){
-					if(crossingIDTo == openNodeList[j].crossingID){
-						found = true;
+				int j;
+				for(j=0; j < openNodeList.length && found == false && openNodeList[j] != null; j++){
+					
+					System.out.println("NAVIAGTE expand openNodeList[j]: " + openNodeList[j]);
+					if(openNodeList[j] != null)
+					{
+						System.out.println("NAVIGATE " + j + " openNodeList[j]: " + openNodeList[j]);
+						if(crossingIDTo == openNodeList[j].crossingID){
+							found = true;
+						}
 					}
 				}
-			}
 			
-			if(found == false || currentNode.Value_f() < openNodeList[i].F(currentNode)){
-				if (found == false){
-					Node newNeighbourNode = new Node(crossingIDTo, currentNode);
-					pushNodeSorted(openNodeList, newNeighbourNode);
+				System.out.println("currentNode.Value_f() " + currentNode.Value_f());
+				System.out.println("openNodeList[i] " + openNodeList[i]);
+				System.out.println(i);
+				//System.out.println("openNodeList[i].F(currentNode) " + openNodeList[i].F(currentNode));
+				
+				System.out.println("--- " + found);
+				if(found)
+				{
+					System.out.println("--- " + currentNode.Value_f());
+					System.out.println("--- " + openNodeList[j].F(currentNode));//FEHLER
 				}
-				else{
-					openNodeList[i].setPredecessor(currentNode);
+				
+				if(found == false || openNodeList[0] == null || (found == true && currentNode.Value_f() < openNodeList[j].F(currentNode))){
+					if (found == false){
+						Node newNeighbourNode = new Node(crossingIDTo, currentNode);
+						openNodeList = pushNodeSorted(openNodeList, newNeighbourNode);
+					}
+					else{
+						openNodeList[j].setPredecessor(currentNode);
+					}
 				}
 			}
 		}
