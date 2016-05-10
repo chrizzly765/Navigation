@@ -1,6 +1,11 @@
 import nav.NavData;
+import java.util.Comparator;
 
-class Node 
+// Street Types
+import fu.keys.LSIClass;
+import fu.keys.LSIClassCentre;
+
+class Node implements Comparator<Node>
 {
 	
 	private int [] links;
@@ -11,10 +16,10 @@ class Node
 	public static Node destination;// = new Node();
 	public static NavData  nd;
 	
-	private int value_c; // actual costs from predecessor to node
-	private int value_g; // actual costs from start to node
-	private int value_f; // estimated costs total
-	private int value_h; // estimated costs from node to end
+	private double value_c; // actual costs from predecessor to node
+	private double value_g; // actual costs from start to node
+	private double value_f; // estimated costs total
+	private double value_h; // estimated costs from node to end
 	
 	private final static double EARTH_RADIUS = 6378.388;
     private final static int MAX_SPEED_FOR_LINEAR_DISTANCE = 100;	
@@ -23,19 +28,19 @@ class Node
 	 * PROPERTIES
 	 ***************************************/
 	
-	public int Value_c()
+	public double Value_c()
 	{
 		return value_c;
 	}	
-	public int Value_g()
+	public double Value_g()
 	{
 		return value_g;
 	}
-	public int Value_f()
+	public double Value_f()
 	{
 		return value_f;
 	}
-	public int Value_h()
+	public double Value_h()
 	{
 		return value_h;
 	}		
@@ -59,7 +64,7 @@ class Node
 	
 		public Node(NavData nd_Node, int latStart, int lonStart, int latZiel, int lonZiel)
 		{
-		this.nd = nd_Node;		
+		this.nd = Navigate.nd;//nd_Node;		
 		System.out.println( "NODE constructor start: " + this.nd);
 		
 		this.crossingID = nd.getNearestCrossing(latStart,lonStart);
@@ -102,46 +107,27 @@ class Node
 	 */
 	private void c()
 	{
-		if (predecessor == null){
-			value_c = 0;
-		}
-		else{
-			double costsToPredecessor;
-			int linkPredecessor = linkFromPredecessor();
-			System.out.println("NODE linkPredecessor: " +linkPredecessor);
-			int speedLimit = nd.getMaxSpeedKMperHours(linkPredecessor);
-			
-			//no explicit speed limitation
-			if(speedLimit == 0)
-			{
-				//get speedlimitation from type of road
-				//TODO
-				//speedlimit = 
-			}
-			
-			value_c = nd.getLengthMeters(linkPredecessor) / speedLimit;
-		}
-		
+		value_c = c(predecessor);
 	}
 	
-	private int c(Node pre)
+	private double c(Node pre)
 	{
 		if (pre == null){
 			return 0;
 		}
 		else{
 			int linkPredecessor = linkFromPredecessor(pre);
-			int speedLimit = nd.getMaxSpeedKMperHours(linkPredecessor);
+			double speedLimit = (double)nd.getMaxSpeedKMperHours(linkPredecessor);
 			
 			//no explicit speed limitation
 			if(speedLimit == 0)
 			{
 				//get speedlimitation from type of road
-				//TODO
-				//speedlimit = 
+				speedLimit = Helper.getSpeedFromType(crossingID);
 			}
 			
-			return nd.getLengthMeters(linkPredecessor) / speedLimit;
+			System.out.println("C: " + nd.getLengthMeters(linkPredecessor) / speedLimit);
+			return (double)nd.getLengthMeters(linkPredecessor) / speedLimit;
 		}
 	}
 	
@@ -172,7 +158,6 @@ class Node
 			System.out.println("crossingID: " + this.crossingID + " " + n + " getCrossingIDTo(link): " + nd.getCrossingIDTo(link) + " predecessor.crossingID: " + pre.crossingID);
 			if(nd.getCrossingIDTo(link) == pre.crossingID)
 			{
-				System.out.println("abc");
 				return link;
 			}
 			n++;
@@ -184,23 +169,19 @@ class Node
 	 * sets costs of start to node
 	 */	private void g()
 	{
-		if (predecessor ==null)
-		{
-			value_g = 0;
-		}
-		else{
-			value_g = predecessor.Value_g() + value_c;
-		}
+		value_g = g(predecessor);
 		
 	}
 	
-	private int g(Node pre){
+	private double g(Node pre){
 		
 		if (pre ==null)
 		{
+			System.out.println("G: 0");
 			return value_g = 0;
 		}
 		else{
+			System.out.println("G: "+ pre.Value_g() + c(pre));
 			return pre.Value_g() + c(pre);
 		}
 	}
@@ -212,11 +193,12 @@ class Node
 	 */
 	private void f()
 	{
-		value_f = value_g + value_h;
+		value_f = F(predecessor);
 	}
 	
-	public int F(Node pre)
+	public double F(Node pre)
 	{
+		System.out.println("F: "+ g(pre) + value_h);
 		return g(pre) + value_h;
 	}
 	
@@ -268,5 +250,12 @@ class Node
 		this.value_h = (int)(Helper.getLinkCostsInSeconds(beeLine, MAX_SPEED_FOR_LINEAR_DISTANCE));//TODO ändern in double
 	}
 	
-	
+	@Override
+	public int compare(Node n1, Node n2) {
+
+		 // n1 > n2 = 1 => sort asc
+		 if(n1.Value_f() > n2.Value_f()) return 1;
+		 else if(n1.Value_f() < n2.Value_f()) return -1;
+		 else return 0;
+	}
 }
