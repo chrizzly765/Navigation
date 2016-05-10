@@ -1,6 +1,7 @@
 import nav.NavData;
 
-class Node{
+class Node 
+{
 	
 	private int [] links;
 	private double beeLine;
