@@ -129,14 +129,6 @@ public class Navigate {
 				route.getNodeCount(currentNode);
 				route.reverseRoute(nodeStart,currentNode);
 				
-                // get count of nodes for array size
-                //int nodeCount = getNodeCount(currentNode);
-                //if(debug) log += "NodeCount: " + nodeCount + eol;
-
-                // add 1 for the last node
-                //Node[] route = new Node [nodeCount+1];
-                //route = reverseRoute(nodeStart,currentNode,nodeCount);
-
                 // write route.txt
                 if(route.printRoute()) {
                     System.out.println("... Route printed");
@@ -144,15 +136,6 @@ public class Navigate {
                 else {
                     System.out.println("--- Route NOT printed");
                 }
-
-                // // write turns.txt
-                // if(route.printTurns()) {
-                //     System.out.println("... Turns printed");
-                // }
-                // else {
-                //     System.out.println("--- Turns NOT printed");
-                // }
-
 			}
 			else {
 				System.out.println("No route found!");
@@ -282,7 +265,7 @@ public class Navigate {
 
                     // h
                     beeLine = spherical.greatCircleMeters(neighborLat_d,neighborLon_d,stop_lat_d,stop_lon_d);
-					NeighborNode.setValue_h(getLinkCostsInSeconds(beeLine, Helper.MAX_SPEED_FOR_LINEAR_DISTANCE));
+					NeighborNode.setValue_h(Helper.getLinkCostsInSeconds(beeLine, Helper.MAX_SPEED_FOR_LINEAR_DISTANCE));
 				}
 
                 if(debug) log += "Neighbor lat/lon: " + Helper.convertCoordToDouble(NeighborNode.lat) + " " + Helper.convertCoordToDouble(NeighborNode.lon) + eol;
@@ -305,7 +288,7 @@ public class Navigate {
 
                 if(debug) log += "Distance/Speed: " + distance + "/" + speed + eol;
 
-				currentNode.setValue_c(getLinkCostsInSeconds(distance, speed));
+				currentNode.setValue_c(Helper.getLinkCostsInSeconds(distance, speed));
                 if(debug) log += "c: " + currentNode.getValue_c() + eol;
 
 				// g
@@ -340,15 +323,6 @@ public class Navigate {
 			}
 		}
 	}
-
-
-	// costs in seconds between two crossings
-    private static double getLinkCostsInSeconds(double distance, double speed) {
-
-        // 30km/h = 30000m / 3600s = 8,333m/s
-        // time = distance/speed => 70m/s : 8,333m/s = 8,4s
-        return (distance / ((speed * 1000) / 3600));
-    }
 
     
 }

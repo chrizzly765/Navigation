@@ -4,7 +4,6 @@ public class Node implements Comparator<Node>{
 
 	public int [] links;
 	public int linkIDToPredecessor;
-	//public int linkIDFromPredecessor;
 	public Node predecessor;
 	public int crossingID;
 	public int lat;
@@ -71,14 +70,6 @@ public class Node implements Comparator<Node>{
 	public double getValue_f() {
 		return this.f;
 	}
-
-	// costs in seconds between two crossings
-    /*public static double getLinkCostsInSeconds(double distance, double speed) {
-
-        // 30km/h = 30000m / 3600s = 8,333m/s
-        // time = distance/speed => 70m/s : 8,333m/s = 8,4s
-        return (distance / ((speed * 1000) / 3600));
-    }*/
 	
 	public String toString() {
 
