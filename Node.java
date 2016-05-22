@@ -6,12 +6,9 @@ public class Node implements Comparator<Node>{
 	public int linkIDToPredecessor;
 	public Node predecessor;
 	public int crossingID;
+	public int domainID;
 	public int lat;
-	public int lon;
-
-	// ??
-	public int angleTo;
-	public int angleFrom;
+	public int lon;	
 
 	private double c;
 	private double f;
@@ -71,10 +68,19 @@ public class Node implements Comparator<Node>{
 		return this.f;
 	}
 
+	// costs in seconds between two crossings
+    /*public static double getLinkCostsInSeconds(double distance, double speed) {
+
+        // 30km/h = 30000m / 3600s = 8,333m/s
+        // time = distance/speed => 70m/s : 8,333m/s = 8,4s
+        return (distance / ((speed * 1000) / 3600));
+    }*/
+
 	public String toString() {
 
 		//String eol = System.getProperty("line.separator");
 		return "crossingID: " + this.crossingID +
+				" linkIDToPredecessor: " + this.linkIDToPredecessor +
 				//" lat: " + this.lat +
 				//" lon: " + this.lon +
 				" C: " + this.getValue_c() +
