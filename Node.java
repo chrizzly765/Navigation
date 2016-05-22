@@ -6,12 +6,9 @@ public class Node implements Comparator<Node>{
 	public int linkIDToPredecessor;
 	public Node predecessor;
 	public int crossingID;
+	public int domainID;
 	public int lat;
 	public int lon;
-
-	// ??
-	public int angleTo;
-	public int angleFrom;
 
 	private double c;
 	private double f;
@@ -70,7 +67,7 @@ public class Node implements Comparator<Node>{
 	public double getValue_f() {
 		return this.f;
 	}
-	
+
 	public String toString() {
 
 		//String eol = System.getProperty("line.separator");

@@ -73,7 +73,7 @@ public class Navigate {
     public static Node currentNode;
 
 	public static PriorityQueue<Node> NodePriorityQueue;
-	
+
 	private static Route route;
 
     // debug
@@ -125,16 +125,24 @@ public class Navigate {
 				System.out.println("... Route found");
 
 				route = new Route();
-				
 				route.getNodeCount(currentNode);
+                //System.out.println("Count: " + route.nodeCount);
 				route.reverseRoute(nodeStart,currentNode);
-				
+
                 // write route.txt
                 if(route.printRoute()) {
                     System.out.println("... Route printed");
                 }
                 else {
                     System.out.println("--- Route NOT printed");
+                }
+
+                // write turns.txt
+                if(route.printTurns()) {
+                    System.out.println("... Turns printed");
+                }
+                else {
+                    System.out.println("--- Turns NOT printed");
                 }
 			}
 			else {
@@ -219,7 +227,9 @@ public class Navigate {
             if(debug) {
     			int domainID = nd.getDomainID(currentNode.links[i]);
     			if(nd.isDomain(domainID)) {
-                    log += eol + "# Neighbor " + i + ": " + nd.getDomainName(domainID) + " ##### LinkID:" + currentNode.links[i] + eol + "----------" + eol;
+                    log += eol + "# Neighbor " + i + ": " + nd.getDomainName(domainID)
+                    + " ##### LinkID:" + currentNode.links[i] + eol + "----------"
+                    + " domainID: " + domainID + eol;
     			}
     			else {
     				log += "No Domain!" + eol;
@@ -281,7 +291,7 @@ public class Navigate {
                     // thats why this way is optimal
                     // if speed is set to 30 the other way is optimal
                     // another possible reason: the speed of the first part of B14 is set to 50, for whatever reason
-                    if(NeighborNode.crossingID == 187983) speed = 30;
+                    //if(NeighborNode.crossingID == 187983) speed = 30;
 
                     if(debug) log += "DEFAULTSPEED: " + speed + eol;
                 }
@@ -307,14 +317,19 @@ public class Navigate {
                     continue;
 				}
 				else {
+                    //currentNode.domainID = nd.getDomainID(currentNode.links[i]);
 					NeighborNode.predecessor = currentNode;
                     NeighborNode.linkIDToPredecessor = nd.getReverseLink(currentNode.links[i]);
+                    NeighborNode.domainID = nd.getDomainID(currentNode.links[i]);
 					NeighborNode.setValue_g(g);
 					NeighborNode.setValue_f(f);
 
                     if(found != true) {
                         NodePriorityQueue.add(NeighborNode);
-                        if(debug) log += "# Add to Queue: " + NeighborNode.crossingID + " ##### Predecessor: " + NeighborNode.predecessor.crossingID + eol;
+                        if(debug) log += "# Add to Queue: " + NeighborNode.crossingID +
+                        " ##### Predecessor: " + NeighborNode.predecessor.crossingID +
+                        " ##### domainID: " + NeighborNode.domainID +
+                        eol;
                     }
 				}
 			}
@@ -323,6 +338,4 @@ public class Navigate {
 			}
 		}
 	}
-
-    
 }

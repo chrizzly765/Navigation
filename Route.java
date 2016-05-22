@@ -3,19 +3,19 @@ import java.io.*;
 
 public class Route
 {
-	int nodeCount = 0;
-	Node[] route;
-	
-	public PrintWriter pwRoute;
-    public PrintWriter pwTurns;
-	
+	public int nodeCount = 0;
+	private Node[] route;
+
+	private PrintWriter pwRoute;
+    private PrintWriter pwTurns;
+
 	private final String TURNS_TXT = "Turns.txt";
 	private final String ROUTE_TXT = "Route.txt";
-	
+
 	public Route(){}
-	
+
 	// count nodes which are concatinated by predecessors to determine what size of array is needed
-    public int getNodeCount(Node lastNode) {
+    public boolean getNodeCount(Node lastNode) {
 
         do {
             if(lastNode.predecessor != null) {
@@ -23,11 +23,13 @@ public class Route
                 lastNode = lastNode.predecessor;
             }
             else {
-                return nodeCount+1;
+                //return nodeCount+1;
+				//nodeCount++;
+				return true;
             }
         } while(true);
     }
-	
+
 	// run through nodes and store in array
     // e.g. nodeCount is 150
     // route[150] = lastNode
@@ -40,12 +42,14 @@ public class Route
         int i=nodeCount;
         route[i] = lastNode;
 
+		//System.out.println("lat last:" +  lastNode.lat);
         do {
             if(lastNode.predecessor != null) {
 
                 route[--i] = lastNode.predecessor;
+				//System.out.println("i:" + i + " Node: " + lastNode.predecessor.lat);
                 if(lastNode.predecessor.crossingID == start.crossingID) {
-                    return route;
+					return route;
                 }
                 lastNode = lastNode.predecessor;
             }
@@ -62,8 +66,37 @@ public class Route
         pwRoute.println("LINE mode=4 col=0,255,0,200 rad=3 startflag=\"Start\" endflag=\"End\" middleflag=\"...Route...\"");
 
         String strLog = "";
-        for (int i=0;i<route.length-1; i++) {
-            pwRoute.println(Helper.convertCoordToDouble(route[i].lon) + "," + Helper.convertCoordToDouble(route[i].lat));
+		int[] latG;
+		int[] lonG;
+		int domainPosFrom;
+		int domainPosTo;
+		int diff;
+
+        for (int i=0;i<route.length; i++) {
+
+			// TODO: 0 = error
+			// start node has no domainID
+			if(route[i].domainID == 0) {
+				continue;
+			}
+
+			if(Navigate.nd.isDomain(route[i].domainID)) {
+
+				latG = Navigate.nd.getDomainLatsE6(route[i].domainID);
+				lonG = Navigate.nd.getDomainLongsE6(route[i].domainID);
+				domainPosFrom = Navigate.nd.getDomainPosNrFrom(route[i].linkIDToPredecessor);
+				domainPosTo = Navigate.nd.getDomainPosNrTo(route[i].linkIDToPredecessor);
+				diff = domainPosTo - domainPosFrom;
+
+				for (int j=domainPosTo; ; ) {
+
+					pwRoute.println(Helper.convertCoordToDouble(lonG[j]) + "," + Helper.convertCoordToDouble(latG[j]));
+					if(j == domainPosFrom) break;
+
+					if(diff > 0) j--;
+					else j++;
+				}
+			}
         }
         pwRoute.close();
         return true;
@@ -77,7 +110,7 @@ public class Route
         for (int i=0;i<route.length-1; i++) {
 
             int domainID = Navigate.nd.getDomainID(route[i].linkIDToPredecessor);
-            if(Navigate.nd.isDomain(domainID)) {
+            //if(Navigate.nd.isDomain(domainID)) {
 
                 strLog =
                 "crossingID: ->" + route[i].crossingID
@@ -85,7 +118,7 @@ public class Route
                 + " DomainID:" + domainID
                 + " Domain:" + Navigate.nd.getDomainName(domainID)
                 + " lat/lon:" + Helper.convertCoordToDouble(route[i].lat) + ", " + Helper.convertCoordToDouble(route[i].lon);
-            }
+            //}
             pwTurns.println(strLog);
         }
         pwTurns.close();
