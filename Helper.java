@@ -22,14 +22,14 @@ import fu.keys.LSIClassCentre;
     public static void setDefaultSpeed() {
 
         mapDefaultSpeed.put("BAUSTELLE_VERKEHR", 30);
-        mapDefaultSpeed.put("AUTOBAHN", 130);
-        mapDefaultSpeed.put("KRAFTFAHRSTRASSE", 80);
-        mapDefaultSpeed.put("LANDSTRASSE", 100);
-        mapDefaultSpeed.put("BUNDESSTRASSE", 50);
+        mapDefaultSpeed.put("AUTOBAHN", 800); //130
+        mapDefaultSpeed.put("KRAFTFAHRSTRASSE", 100);//80
+        mapDefaultSpeed.put("LANDSTRASSE", 100); //100
+        mapDefaultSpeed.put("BUNDESSTRASSE", 100); //50
         mapDefaultSpeed.put("LANDSTRASSE_SEKUNDAER", 80);
         mapDefaultSpeed.put("LANDSTRASSE_TERTIAER", 50);
         mapDefaultSpeed.put("LANDSTRASSE_UNKLASSIFIZIERT", 30);
-        mapDefaultSpeed.put("INNERORTSTRASSE", 50);
+        mapDefaultSpeed.put("INNERORTSTRASSE", 40); //50
         mapDefaultSpeed.put("VERKEHRSBERUHIGTER_BEREICH", 15);
         mapDefaultSpeed.put("ANSCHLUSSSTELLE_AUTOBAHN", 80);
         mapDefaultSpeed.put("ANSCHLUSSSTELLE_KRAFTFAHRSTRASSE", 50);
