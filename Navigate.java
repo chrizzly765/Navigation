@@ -23,7 +23,7 @@ import fu.geo.Spherical;
 // java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.48431 11.197552 49.474915 11.122614
 
 // route from Laufamholzstrasse to Moritzbergstrasse
-// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.46591000 11.15800500 49.465152 11.152112
+// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC   49.46591000 11.15800500 49.465152 11.152112
 
 // route from Chiemsee to Norddeich
 // java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 47.889674 12.417799 53.612192 07.150162
@@ -153,7 +153,7 @@ public class Navigate {
             double elapsed = ((stopTime - startTime));
 
             log += "Elapsed Time: " + stopTime + " - " + startTime + " = " + elapsed + "ms";
-            // System.out.println(log);
+            System.out.println("Elapsed Time: " + stopTime + " - " + startTime + " = " + elapsed + "ms");
             // ##########################################
 			// stop timer
 

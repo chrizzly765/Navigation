@@ -129,23 +129,23 @@ public class Route
 								nextDomainID = Navigate.nd.getDomainID(route[i+1].linkIDToPredecessor);
 								nextDomainName = Navigate.nd.getDomainName(nextDomainID);
 								beta = Navigate.nd.getNorthAngleFrom(nextLinkID);
-								System.out.println(i + " alpha "+ alpha + " beta " + beta);
+								//System.out.println(i + " alpha "+ alpha + " beta " + beta);
 
-
+								strLog += "Durchgang " + i + Navigate.eol;
 								if (domainName.equals(nextDomainName)) {
-                	strLog += "Bleiben Sie auf der " + domainName + Navigate.eol;
+                	strLog += "Bleiben Sie auf der " + nextDomainName + Navigate.eol;
 								}
 								else if((alpha+beta) >= 180 ) {
-									strLog += "Biegen Sie bitte links ab, in die  " + domainName + Navigate.eol;
+									strLog += "Biegen Sie bitte links ab, in die " + nextDomainName + Navigate.eol;
 								}
 								else if((alpha+beta) < 180) {
-									strLog += "Biegen Sie bitte rechts ab, in die  " + domainName +Navigate.eol;
+									strLog += "Biegen Sie bitte rechts ab, in die " + nextDomainName +Navigate.eol;
 								}
-								// else {
-								//
-								// }
+								else {
+
+								}
             }
-						//
+
 						// strLog +=
 						// "crossingID: ->" + route[i].crossingID
 						// + " crossingIDFrom:" + route[i].linkIDToPredecessor
@@ -157,5 +157,6 @@ public class Route
 				 pwTurns.println(strLog);
         pwTurns.close();
         return true;
-     }
+
+}
 }
