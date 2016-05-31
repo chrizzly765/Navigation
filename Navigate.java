@@ -28,6 +28,9 @@ import fu.keys.LSIClassCentre;
 //route Erlangen Berlin
 // java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 49.594275 11.001648 52.416415 13.502733
 
+//route bug fix test
+// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 50.098458 11.697518 50.079110 11.661637
+
 // route from Chiemsee to Norddeich
 // java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 47.889674 12.417799 53.612192 07.150162
 // 04.05. ca. 200 Sekunden
@@ -156,7 +159,7 @@ public class Navigate {
             double elapsed = ((stopTime - startTime));
 
             log += "Elapsed Time: " + stopTime + " - " + startTime + " = " + elapsed + "ms";
-            System.out.println(log);
+            //System.out.println(log);
             // ##########################################
 			// stop timer
 
@@ -300,6 +303,7 @@ public class Navigate {
                 if(debug) log += "c: " + NeighborNode.getValue_c() + eol;//if(debug) log += "c: " + currentNode.getValue_c() + eol;
 				*/
 				c = NeighborNode.c(currentNode, currentNode.links[i]);
+				if(debug) log += "c: " + c;
 				
 				// g
                 if(debug) log += "g: " + currentNode.getValue_g() + " + " + NeighborNode.getValue_c() + eol;//if(debug) log += "g: " + currentNode.getValue_g() + " + " + currentNode.getValue_c() + eol;
