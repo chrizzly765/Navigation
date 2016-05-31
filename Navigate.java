@@ -59,22 +59,22 @@ public class Navigate {
     // coordinates for neighbors
     private static int neighborLat;
     private static int neighborLon;
-	private static double neighborLat_d;
-	private static double neighborLon_d;
+	  private static double neighborLat_d;
+	  private static double neighborLon_d;
 
-	public static double beeLine;
-	public static double distance;
-	public static double speed;
+	  public static double beeLine;
+	  public static double distance;
+  	public static double speed;
 
-	public static NavData nd;
-	public static Spherical spherical;
+  	public static NavData nd;
+  	public static Spherical spherical;
 
     public static Node lastNode;
     public static Node currentNode;
 
-	public static PriorityQueue<Node> NodePriorityQueue;
+  	public static PriorityQueue<Node> NodePriorityQueue;
 
-	private static Route route;
+  	private static Route route;
 
     // debug
     public static boolean debug = false;
@@ -153,7 +153,7 @@ public class Navigate {
             double elapsed = ((stopTime - startTime));
 
             log += "Elapsed Time: " + stopTime + " - " + startTime + " = " + elapsed + "ms";
-            System.out.println(log);
+            // System.out.println(log);
             // ##########################################
 			// stop timer
 
@@ -182,7 +182,6 @@ public class Navigate {
 
         int expandCalls = 0;
 		do {
-
             // assign least element to currentNode and remove from queue
 			currentNode = NodePriorityQueue.remove();
             if(debug) {
@@ -203,8 +202,12 @@ public class Navigate {
             expandCalls++;
 
 			if(debug) log += "----- Close Current crossingID: " + currentNode.crossingID + eol + eol;
+
+
 		}
 		while(NodePriorityQueue.size() > 0);
+
+
 
 		return false;
 	}
@@ -338,4 +341,14 @@ public class Navigate {
 			}
 		}
 	}
+
+  //
+  // private static void pollDataFromQueue(PriorityQueue<Node> NodePriorityQueue) {
+  //
+	// 	while(true) {
+  //           Node n = NodePriorityQueue.poll();
+  //           if(n == null) break;
+  //           System.out.println("PQ Node - Pre: " + n.predecessor.crossingID + " crossingID: " + n.crossingID + " F:" + n.getValue_f());
+  //       }
+  //   }
 }
