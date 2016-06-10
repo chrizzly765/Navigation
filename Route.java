@@ -122,11 +122,6 @@ public class Route
         pwTurns = new PrintWriter(TURNS_TXT);
 
         String strLog = "";
-				// PrintTest(262250);
-				// PrintTest(308539);
-				// PrintTest(262254);
-				// PrintTest(262256);
-				// PrintTest(262210);
 
         for (int i=1;i<route.length; i++) {
 
@@ -159,7 +154,7 @@ public class Route
 									strLog += "nextLinkID " + nextLinkID + Navigate.eol;
 									strLog += "alpha " + alpha + Navigate.eol;
 								strLog += "beta " + beta + Navigate.eol;
-									strLog += "alpha + beta " + (alpha-beta) + Navigate.eol;
+									strLog += "alpha - beta " + (alpha-beta) + Navigate.eol;
 									strLog += "Biegen Sie bitte links ab, in die " + nextDomainName + Navigate.eol;
 								}
 								else if((alpha-beta) < 0) {
@@ -168,7 +163,7 @@ public class Route
 									strLog += "alpha " + alpha + Navigate.eol;
 									strLog += "beta " + beta + Navigate.eol;
 									//strLog += "gamma " + gamma + Navigate.eol;
-									strLog += "alpha + beta " + (alpha-beta) + Navigate.eol;
+									strLog += "alpha - beta " + (alpha-beta) + Navigate.eol;
 									strLog += "Biegen Sie bitte rechts ab, in die " + nextDomainName +Navigate.eol;
 									// if((i+3) < route.length){
 									// 	afterNextID = route[i+3].linkIDToPredecessor;
