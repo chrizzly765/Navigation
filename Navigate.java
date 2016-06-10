@@ -10,7 +10,7 @@ import fu.keys.LSIClass;
 import fu.keys.LSIClassCentre;
 
 // Earth Radius
-import fu.geo.Spherical;
+//import fu.geo.Spherical;
 
 // compile
 // javac -cp .;nav.jar Navigate.java
@@ -23,7 +23,13 @@ import fu.geo.Spherical;
 // java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.48431 11.197552 49.474915 11.122614
 
 // route from Laufamholzstrasse to Moritzbergstrasse
-// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC   49.46591000 11.15800500 49.465152 11.152112
+// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.46591000 11.15800500 49.465152 11.152112
+
+//route Erlangen Berlin
+// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 49.594275 11.001648 52.416415 13.502733
+
+//route bug fix test
+// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 50.098458 11.697518 50.079110 11.661637
 
 // route from Chiemsee to Norddeich
 // java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 47.889674 12.417799 53.612192 07.150162
@@ -59,22 +65,22 @@ public class Navigate {
     // coordinates for neighbors
     private static int neighborLat;
     private static int neighborLon;
-	  private static double neighborLat_d;
-	  private static double neighborLon_d;
+	private static double neighborLat_d;
+	private static double neighborLon_d;
 
-	  public static double beeLine;
-	  public static double distance;
-  	public static double speed;
+	public static double beeLine;
+	public static double distance;
+	public static double speed;
 
-  	public static NavData nd;
-  	public static Spherical spherical;
+	public static NavData nd;
+	//public static Spherical spherical;
 
     public static Node lastNode;
     public static Node currentNode;
 
-  	public static PriorityQueue<Node> NodePriorityQueue;
+	public static PriorityQueue<Node> NodePriorityQueue;
 
-  	private static Route route;
+	private static Route route;
 
     // debug
     public static boolean debug = false;
@@ -92,7 +98,7 @@ public class Navigate {
 
         try {
 
-			nd = new NavData(args[0], true);
+			nd = new NavData(args[0], true); 
 			// start timer
 			// ##########################################
             long startTime = System.currentTimeMillis();
@@ -117,8 +123,8 @@ public class Navigate {
 			int crossingIdStart = nd.getNearestCrossing(start_lat, start_lon);
 			int crossingIdStop = nd.getNearestCrossing(stop_lat, stop_lon);
 
-			Node nodeStart = new Node(crossingIdStart,start_lat, start_lon);
-			Node nodeDestination = new Node(crossingIdStop,stop_lat, stop_lon);
+			Node nodeStart =       new Node(crossingIdStart, start_lat, start_lon, stop_lat_d, stop_lon_d);
+			Node nodeDestination = new Node(crossingIdStop,  stop_lat,  stop_lon, stop_lat_d, stop_lon_d);
 
 			if(A_Star(nodeStart, nodeDestination)) {
 
@@ -182,6 +188,7 @@ public class Navigate {
 
         int expandCalls = 0;
 		do {
+
             // assign least element to currentNode and remove from queue
 			currentNode = NodePriorityQueue.remove();
             if(debug) {
@@ -202,12 +209,8 @@ public class Navigate {
             expandCalls++;
 
 			if(debug) log += "----- Close Current crossingID: " + currentNode.crossingID + eol + eol;
-
-
 		}
 		while(NodePriorityQueue.size() > 0);
-
-
 
 		return false;
 	}
@@ -218,6 +221,7 @@ public class Navigate {
 		boolean found;
 		Node NeighborNode = null;
         int crossingIDTo;
+		double c;
         double g;
         double f;
 
@@ -270,47 +274,46 @@ public class Navigate {
                     neighborLat_d = Helper.convertCoordToDouble(neighborLat);
                     neighborLon_d = Helper.convertCoordToDouble(neighborLon);
 
-					NeighborNode = new Node(crossingIDTo, neighborLat, neighborLon);
+					NeighborNode = new Node(crossingIDTo, neighborLat, neighborLon, stop_lat_d, stop_lon_d);
                     NeighborNode.links = nd.getLinksForCrossing(crossingIDTo);
                     openNodeList[crossingIDTo] = NeighborNode;
 
                     if(debug) log += "# Open Neighbor: " + NeighborNode.crossingID + eol;
 
                     // h
-                    beeLine = spherical.greatCircleMeters(neighborLat_d,neighborLon_d,stop_lat_d,stop_lon_d);
-					NeighborNode.setValue_h(Helper.getLinkCostsInSeconds(beeLine, Helper.MAX_SPEED_FOR_LINEAR_DISTANCE));
+                    //beeLine = spherical.greatCircleMeters(neighborLat_d,neighborLon_d,stop_lat_d,stop_lon_d);
+					//NeighborNode.setValue_h(Helper.getLinkCostsInSeconds(beeLine, Helper.MAX_SPEED_FOR_LINEAR_DISTANCE));
 				}
 
                 if(debug) log += "Neighbor lat/lon: " + Helper.convertCoordToDouble(NeighborNode.lat) + " " + Helper.convertCoordToDouble(NeighborNode.lon) + eol;
 
+				/*
 				// c = costs from current to neighbor
                 distance = (double) nd.getLengthMeters(currentNode.links[i]);
 
                 speed = (double) nd.getMaxSpeedKMperHours(currentNode.links[i]);
                 if(speed == 0) {
                     speed = Helper.getDefaultSpeed(currentNode,currentNode.links[i]);
-
-                    // left side of Espanstrasse has no speed so we assumed 50
-                    // thats why this way is optimal
-                    // if speed is set to 30 the other way is optimal
-                    // another possible reason: the speed of the first part of B14 is set to 50, for whatever reason
-                    //if(NeighborNode.crossingID == 187983) speed = 30;
-
+					
                     if(debug) log += "DEFAULTSPEED: " + speed + eol;
                 }
-
                 if(debug) log += "Distance/Speed: " + distance + "/" + speed + eol;
 
-				currentNode.setValue_c(Helper.getLinkCostsInSeconds(distance, speed));
-                if(debug) log += "c: " + currentNode.getValue_c() + eol;
-
+				NeighborNode.setValue_c(Helper.getLinkCostsInSeconds(distance, speed));//currentNode.setValue_c(Helper.getLinkCostsInSeconds(distance, speed));
+                if(debug) log += "c: " + NeighborNode.getValue_c() + eol;//if(debug) log += "c: " + currentNode.getValue_c() + eol;
+				*/
+				c = NeighborNode.c(currentNode, currentNode.links[i]);
+				if(debug) log += "c: " + c;
+				
 				// g
-                if(debug) log += "g: " + currentNode.getValue_g() + " + " + currentNode.getValue_c() + eol;
-                g = currentNode.getValue_g() + currentNode.getValue_c();
-
+                if(debug) log += "g: " + currentNode.getValue_g() + " + " + NeighborNode.getValue_c() + eol;//if(debug) log += "g: " + currentNode.getValue_g() + " + " + currentNode.getValue_c() + eol;
+                //g = currentNode.getValue_g() + NeighborNode.getValue_c();//g = currentNode.getValue_g() + currentNode.getValue_c();
+				g = NeighborNode.g(currentNode, currentNode.links[i]);
+				
 				// f
                 if(debug) log += "f: " + g + " + " + NeighborNode.getValue_h() + eol;
-                f = g + NeighborNode.getValue_h();
+                //f = g + NeighborNode.getValue_h();
+				f = NeighborNode.f(currentNode, currentNode.links[i]);
 
                 if(debug) log += "if: found=" + found + " && " + f + " > " + NeighborNode.getValue_f() + eol;
 
@@ -320,12 +323,16 @@ public class Navigate {
                     continue;
 				}
 				else {
+					/*
                     //currentNode.domainID = nd.getDomainID(currentNode.links[i]);
 					NeighborNode.predecessor = currentNode;
                     NeighborNode.linkIDToPredecessor = nd.getReverseLink(currentNode.links[i]);
                     NeighborNode.domainID = nd.getDomainID(currentNode.links[i]);
 					NeighborNode.setValue_g(g);
-					NeighborNode.setValue_f(f);
+					NeighborNode.setValue_f(f);*/
+					
+					//new setPredecessor
+					NeighborNode.setPredecessor(currentNode, nd.getReverseLink(currentNode.links[i]), c, g, f);
 
                     if(found != true) {
                         NodePriorityQueue.add(NeighborNode);
@@ -341,14 +348,4 @@ public class Navigate {
 			}
 		}
 	}
-
-  //
-  // private static void pollDataFromQueue(PriorityQueue<Node> NodePriorityQueue) {
-  //
-	// 	while(true) {
-  //           Node n = NodePriorityQueue.poll();
-  //           if(n == null) break;
-  //           System.out.println("PQ Node - Pre: " + n.predecessor.crossingID + " crossingID: " + n.crossingID + " F:" + n.getValue_f());
-  //       }
-  //   }
 }
