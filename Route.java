@@ -90,7 +90,7 @@ public class Route
 
 				for (int j=domainPosTo; ; ) {
 
-					pwRoute.println(Helper.convertCoordToDouble(lonG[j]) + "," + Helper.convertCoordToDouble(latG[j]) /*+ ", speed limit: " + route[i].setSpeedLimit(route[i].predecessor,route[i].linkIDToPredecessor )*/);
+					pwRoute.println(Helper.convertCoordToDouble(lonG[j]) + "," + Helper.convertCoordToDouble(latG[j]));
 					if(j == domainPosFrom) break;
 
 					if(diff > 0) j--;
@@ -104,24 +104,83 @@ public class Route
 
     public boolean printTurns() throws FileNotFoundException {
 
+			//testing TURNS
+
+			//compile
+			//javac -cp .;nav.jar Navigate.java
+
+			//abbiegen nach links:
+			//java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.46591000 11.15800500 49.466032 11.156306
+
+			//abbiegen nach rechts:
+			//java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.46591000 11.15800500 49.466716 11.157468
+
+			// draw map
+			// java -cp .;nav.jar pp.dorenda.client2.testapp.TestActivity -m webservice;geosrv.informatik.fh-nuernberg.de -c pp.dorenda.client2.additional.UniversalPainter -a Route.txt;s
+
+			// route from Grünreutherstrasse to Kesslerplatz
+			// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.46591000 11.15800500 49.453025 11.093324
+
+
         pwTurns = new PrintWriter(TURNS_TXT);
 
         String strLog = "";
-        for (int i=0;i<route.length-1; i++) {
 
+        for (int i=1;i<route.length; i++) {
+
+						int linkID = route[i].linkIDToPredecessor;
             int domainID = Navigate.nd.getDomainID(route[i].linkIDToPredecessor);
-            //if(Navigate.nd.isDomain(domainID)) {
+						String domainName = Navigate.nd.getDomainName(domainID);
+						int nextDomainID;
+						String nextDomainName;
+						int alpha = Navigate.nd.getNorthAngleTo(linkID);//ich fahre aus dem alten Link raus
+						int beta;
+						int nextLinkID;
+						int differenz;
+						String txt = "";
 
-                strLog =
-                "crossingID: ->" + route[i].crossingID
-                + " crossingIDFrom:" + route[i].linkIDToPredecessor
-                + " DomainID:" + domainID
-                + " Domain:" + Navigate.nd.getDomainName(domainID)
-                + " lat/lon:" + Helper.convertCoordToDouble(route[i].lat) + ", " + Helper.convertCoordToDouble(route[i].lon);
-            //}
-            pwTurns.println(strLog);
-        }
+            if((i+1) < route.length) {
+								nextLinkID = route[i+1].linkIDToPredecessor;
+								nextDomainID = Navigate.nd.getDomainID(route[i+1].linkIDToPredecessor);
+								nextDomainName = Navigate.nd.getDomainName(nextDomainID);
+								beta = Navigate.nd.getNorthAngleFrom(nextLinkID); //und fahre in den Neuen link rein
+								differenz = Math.abs(Math.abs(alpha)-Math.abs(beta));
+
+								if (differenz > 10 && differenz <= 50 ){
+									txt = "leicht ";
+								}
+								else if(differenz > 140){
+									txt = "scharf ";
+								}
+
+								strLog += "Durchgang " + i + Navigate.eol;
+
+								if (domainName.equals(nextDomainName)) {
+                	strLog += "Bleiben Sie auf der " + nextDomainName + Navigate.eol;
+								}
+								else if(differenz <= 10){
+									strLog += "Fahren Sie weiter gerade aus auf die " + nextDomainName + Navigate.eol;
+								}
+								else if((beta < 0 && alpha < 0)||(beta > 0 && alpha > 0)) {
+									if(alpha > beta){
+										strLog += "Biegen Sie bitte " + txt + "links ab, in die " + nextDomainName + "alpha - beta " + differenz + Navigate.eol;
+									}
+									else if(alpha < beta) {
+										strLog += "Biegen Sie bitte " + txt + "rechts ab, in die " + nextDomainName + "alpha - beta " + differenz + Navigate.eol;
+									}
+								}
+								else if(alpha > 0 && beta < 0){
+										strLog += "Biegen Sie bitte " + txt + " links ab, in die " + nextDomainName + "alpha - beta " + differenz + Navigate.eol;
+								}
+								else if (alpha < 0 && beta > 0){
+										strLog += "Biegen Sie bitte " + txt + " rechts ab, in die " + nextDomainName + "alpha - beta " + differenz + Navigate.eol;
+								}
+
+            }
+         }
+				pwTurns.println(strLog);
         pwTurns.close();
         return true;
-    }
+
+}
 }
