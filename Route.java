@@ -109,25 +109,20 @@ public class Route
         String strLog = "";
 				boolean temp = false;
 
-        for (int i=1;i<route.length; i++) {
+        for (int i=1;i<route.length-1; i++) {
 
 						int linkID = route[i].linkIDToPredecessor;
             int domainID = Navigate.nd.getDomainID(route[i].linkIDToPredecessor);
 						String domainName = Navigate.nd.getDomainName(domainID);
-						int nextDomainID;
-						String nextDomainName;
+						int nextDomainID = Navigate.nd.getDomainID(route[i+1].linkIDToPredecessor);
+						String nextDomainName =  Navigate.nd.getDomainName(nextDomainID);;
 						int alpha = Navigate.nd.getNorthAngleTo(linkID);
-						int beta;
-						int nextLinkID;
-						int differenz;
+						int nextLinkID = route[i+1].linkIDToPredecessor;
+						int beta = Navigate.nd.getNorthAngleFrom(nextLinkID);
+						int differenz = Math.abs(Math.abs(alpha)-Math.abs(beta));
 						String txt = "";
 
-            if((i+1) < route.length) {
-								nextLinkID = route[i+1].linkIDToPredecessor;
-								nextDomainID = Navigate.nd.getDomainID(route[i+1].linkIDToPredecessor);
-								nextDomainName = Navigate.nd.getDomainName(nextDomainID);
-								beta = Navigate.nd.getNorthAngleFrom(nextLinkID);
-								differenz = Math.abs(Math.abs(alpha)-Math.abs(beta));
+            //if((i+1) < route.length) {
 
 								if (differenz > 10 && differenz <= 50 ){
 									txt = "leicht ";
@@ -164,11 +159,12 @@ public class Route
 										temp = false;
 								}
 
-            }
-						else {
-							strLog += "Sie haben Ihr Ziel erreicht!";
-						}
+            // }
+						// else {
+						// 	strLog += "Sie haben Ihr Ziel erreicht!";
+						// }
          }
+				strLog += "Sie haben Ihr Ziel erreicht!";
 				pwTurns.println(strLog);
         pwTurns.close();
         return true;
