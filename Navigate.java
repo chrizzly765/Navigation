@@ -159,7 +159,7 @@ public class Navigate {
             double elapsed = ((stopTime - startTime));
 
             log += "Elapsed Time: " + stopTime + " - " + startTime + " = " + elapsed + "ms";
-            //System.out.println(log);
+            System.out.println("Elapsed Time: " + stopTime + " - " + startTime + " = " + elapsed + "ms");
             // ##########################################
 			// stop timer
 

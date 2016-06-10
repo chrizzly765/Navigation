@@ -19,6 +19,7 @@ public class Node implements Comparator<Node>{
 	private double h;
 	
 	public static Spherical spherical;
+	double speedLimit = 0.0;
 
 	public Node(int _crossingID, int _lat, int _lon, double stop_lat_d, double stop_lon_d) {
 
@@ -75,12 +76,15 @@ public class Node implements Comparator<Node>{
 		return this.f;
 	}
 	
-	
+	public double getSpeedLimit() {
+		return this.speedLimit;
+	}
 	/**
 	 * sets costs of predecessor to node
 	 */
 	private void c()
 	{
+		//speedLimit = setSpeedLimit(predecessor, linkIDToPredecessor);
 		c = c(predecessor, linkIDToPredecessor);
 	}
 	
@@ -90,16 +94,27 @@ public class Node implements Comparator<Node>{
 		}
 		else{
 			double distance = (double) Navigate.nd.getLengthMeters(linkIDToPre);
-			double speedLimit = (double) Navigate.nd.getMaxSpeedKMperHours(linkIDToPre);
+			double speed = setSpeedLimit(pre, linkIDToPre);
 			
-			//no explicit speed limitation
-			if(speedLimit == 0)
-			{
-				//get speedlimitation from type of road
-				speedLimit = Helper.getDefaultSpeed(pre,linkIDToPre);
-			}
-			return Helper.getLinkCostsInSeconds(distance, speedLimit);
+			return Helper.getLinkCostsInSeconds(distance, speed);
 		}
+	}
+	
+	public double setSpeedLimit(Node pre, int linkIDToPre){
+		double speed = (double) Navigate.nd.getMaxSpeedKMperHours(linkIDToPre);
+		
+		//no explicit speed limitation
+		if(speed == 0.0)
+		{
+			//get speedlimitation from type of road
+			speed = Helper.getDefaultSpeed(pre,linkIDToPre);
+			
+			//System.out.println("speed linktype" + speed);
+		}
+		else{
+			//System.out.println("speed link" + speed);
+		}
+		return speed;
 	}
 	/**
 	 * sets costs of start to node
@@ -137,6 +152,7 @@ public class Node implements Comparator<Node>{
 		predecessor = newPredecessor;
 		linkIDToPredecessor = newLinkIDToPredecessor;
 		domainID = Navigate.nd.getDomainID(Navigate.nd.getReverseLink(linkIDToPredecessor));
+		speedLimit = setSpeedLimit(newPredecessor, newLinkIDToPredecessor);
 		c();
 		g();
 		f();
@@ -149,6 +165,7 @@ public class Node implements Comparator<Node>{
 		predecessor = newPredecessor;
 		linkIDToPredecessor = newLinkIDToPredecessor;
 		domainID = Navigate.nd.getDomainID(Navigate.nd.getReverseLink(linkIDToPredecessor));
+		speedLimit = setSpeedLimit(newPredecessor, newLinkIDToPredecessor);
 		this.c = newC;
 		this.g = newG;
 		this.f = newF;

@@ -90,7 +90,7 @@ public class Route
 
 				for (int j=domainPosTo; ; ) {
 
-					pwRoute.println(Helper.convertCoordToDouble(lonG[j]) + "," + Helper.convertCoordToDouble(latG[j]));
+					pwRoute.println(Helper.convertCoordToDouble(lonG[j]) + "," + Helper.convertCoordToDouble(latG[j]) /*+ ", speed limit: " + route[i].setSpeedLimit(route[i].predecessor,route[i].linkIDToPredecessor )*/);
 					if(j == domainPosFrom) break;
 
 					if(diff > 0) j--;
