@@ -41,7 +41,7 @@ import fu.keys.LSIClassCentre;
 
 	public static double getDefaultSpeed(Node currentNode, int linkID) {
 
-        int lsiClassNr = Navigate.nd.getLSIclass(currentNode.crossingID);
+        int lsiClassNr = Navigate.nd.getLSIclass(linkID);
         LSIClass lsiClass = LSIClassCentre.lsiClassByID(lsiClassNr);
 
         String token = lsiClass.classToken;

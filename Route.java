@@ -104,44 +104,91 @@ public class Route
 
     public boolean printTurns() throws FileNotFoundException {
 
+			//testing TURNS
+
+			//compile
+			//javac -cp .;nav.jar Navigate.java
+
+			//abbiegen nach links:
+			//java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.46591000 11.15800500 49.466032 11.156306
+
+			//abbiegen nach rechts:
+			//java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.46591000 11.15800500 49.466716 11.157468
+
+			// draw map
+			// java -cp .;nav.jar pp.dorenda.client2.testapp.TestActivity -m webservice;geosrv.informatik.fh-nuernberg.de -c pp.dorenda.client2.additional.UniversalPainter -a Route.txt;s
+
+
         pwTurns = new PrintWriter(TURNS_TXT);
 
         String strLog = "";
-				//
-				// for(int i = 0; i<route.length; i++){
-				// 	System.out.println("test " + i + " = " + route[i].linkIDToPredecessor);
-				// }
+				// PrintTest(262250);
+				// PrintTest(308539);
+				// PrintTest(262254);
+				// PrintTest(262256);
+				// PrintTest(262210);
 
-        for (int i=0;i<route.length; i++) {
+        for (int i=1;i<route.length; i++) {
 
 						int linkID = route[i].linkIDToPredecessor;
             int domainID = Navigate.nd.getDomainID(route[i].linkIDToPredecessor);
 						String domainName = Navigate.nd.getDomainName(domainID);
 						int nextDomainID;
 						String nextDomainName;
-						int alpha = Navigate.nd.getNorthAngleTo(linkID);
+						int alpha = Navigate.nd.getNorthAngleFrom(linkID);//ich fahre aus dem alten Link raus
 						int beta;
 						int nextLinkID;
+						//int gamma;
+						// int lastID = route[route.length-1].linkIDToPredecessor;
+						// int afterNextID;
 
             if((i+1) < route.length) {
 								// System.out.println("route[i+1] != null");
 								nextLinkID = route[i+1].linkIDToPredecessor;
 								nextDomainID = Navigate.nd.getDomainID(route[i+1].linkIDToPredecessor);
 								nextDomainName = Navigate.nd.getDomainName(nextDomainID);
-								beta = Navigate.nd.getNorthAngleFrom(nextLinkID);
-								//System.out.println(i + " alpha "+ alpha + " beta " + beta);
-
+								beta = Navigate.nd.getNorthAngleTo(nextLinkID); //und fahre in den Neuen link rein
 								strLog += "Durchgang " + i + Navigate.eol;
 								if (domainName.equals(nextDomainName)) {
+									strLog += "linkID " + linkID + Navigate.eol;
+									strLog += "nextLinkID " + nextLinkID + Navigate.eol;
                 	strLog += "Bleiben Sie auf der " + nextDomainName + Navigate.eol;
 								}
-								else if((alpha+beta) >= 180 ) {
+								else if((alpha-beta) > 0 ) {
+									strLog += "linkID " + linkID + Navigate.eol;
+									strLog += "nextLinkID " + nextLinkID + Navigate.eol;
+									strLog += "alpha " + alpha + Navigate.eol;
+								strLog += "beta " + beta + Navigate.eol;
+									strLog += "alpha + beta " + (alpha-beta) + Navigate.eol;
 									strLog += "Biegen Sie bitte links ab, in die " + nextDomainName + Navigate.eol;
 								}
-								else if((alpha+beta) < 180) {
+								else if((alpha-beta) < 0) {
+									strLog += "linkID " + linkID + Navigate.eol;
+									strLog += "nextLinkID " + nextLinkID + Navigate.eol;
+									strLog += "alpha " + alpha + Navigate.eol;
+									strLog += "beta " + beta + Navigate.eol;
+									//strLog += "gamma " + gamma + Navigate.eol;
+									strLog += "alpha + beta " + (alpha-beta) + Navigate.eol;
 									strLog += "Biegen Sie bitte rechts ab, in die " + nextDomainName +Navigate.eol;
-								}
-								else {
+									// if((i+3) < route.length){
+									// 	afterNextID = route[i+3].linkIDToPredecessor;
+									// 	// alpha = Navigate.nd.getNorthAngleTo(nextLinkID);
+									// 	gamma = Navigate.nd.getNorthAngleTo(lastID);
+									//
+									// 	if((alpha+gamma) >= 180 ) {
+									// 		strLog += "linkID " + linkID + Navigate.eol;
+									// 		strLog += "nextLinkID " + nextLinkID + Navigate.eol;
+									// 		strLog += "alpha " + alpha + Navigate.eol;
+									// 		strLog += "beta " + beta + Navigate.eol;
+									// 		strLog += "gamma " + gamma + Navigate.eol;
+									// 		strLog += "alpha + beta " + (alpha+beta) + Navigate.eol;
+									// 		strLog += "Biegen Sie bitte links ab, in die " + nextDomainName + Navigate.eol;
+									// 	}
+									// 	else if ((alpha+gamma) < 180){
+									//
+									// 	}
+
+									// }
 
 								}
             }
@@ -159,4 +206,36 @@ public class Route
         return true;
 
 }
+				//Only for Testing
+				public void PrintTest (int linkId){
+					System.out.println("---------"+linkId+"--------------");
+
+					int crossingIDTo = 	Navigate.nd.getCrossingIDTo(linkId);
+					System.out.println("crossingIDTo " + crossingIDTo);
+					int latTo = Navigate.nd.getCrossingLatE6(crossingIDTo);
+					System.out.println("latTo " + latTo);
+					int longTo = Navigate.nd.getCrossingLongE6(crossingIDTo);
+					System.out.println("longTo " + longTo);
+
+					int crossingIDFrom = 	Navigate.nd.getCrossingIDFrom(linkId);
+					System.out.println("crossingIDFrom " + crossingIDFrom);
+					int latFROM = Navigate.nd.getCrossingLatE6(crossingIDFrom);
+					System.out.println("latFROM " + latFROM);
+					int longFROM = Navigate.nd.getCrossingLongE6(crossingIDFrom);
+					System.out.println("longFROM " + longFROM);
+
+					int alpha = Navigate.nd.getNorthAngleFrom(linkId);
+					int beta = Navigate.nd.getNorthAngleTo(linkId);
+					System.out.println("alphaFROM " + alpha);
+					System.out.println("betaTO " + beta);
+				}
+
+				// public String LeftOrRight (int alpha, int beta){
+				//
+				// 	if((alpha+beta) >= 180 ) {
+				// 		return "Biegen Sie bitte links ab, in die "
+				// 	}
+				// 	return "Biegen Sie bitte rechts ab, in die "
+				//
+				// }
 }
