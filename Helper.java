@@ -7,7 +7,7 @@ import fu.keys.LSIClassCentre;
  public final class Helper
 {
 	public final static double FACTOR = 1000000.0;
-	public final static int MAX_SPEED_FOR_LINEAR_DISTANCE = 100;
+	public final static int MAX_SPEED_FOR_LINEAR_DISTANCE = 140;
 	public static Map<String, Integer> mapDefaultSpeed = new HashMap<String, Integer>();
 
 	public static int convertCoordToInt(double coordinate) {
@@ -22,7 +22,7 @@ import fu.keys.LSIClassCentre;
     public static void setDefaultSpeed() {
 
         mapDefaultSpeed.put("BAUSTELLE_VERKEHR", 30);
-        mapDefaultSpeed.put("AUTOBAHN", 130);
+        mapDefaultSpeed.put("AUTOBAHN", MAX_SPEED_FOR_LINEAR_DISTANCE);
         mapDefaultSpeed.put("KRAFTFAHRSTRASSE", 80);
         mapDefaultSpeed.put("LANDSTRASSE", 100);
         mapDefaultSpeed.put("BUNDESSTRASSE", 50);

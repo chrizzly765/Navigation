@@ -104,27 +104,10 @@ public class Route
 
     public boolean printTurns() throws FileNotFoundException {
 
-			//testing TURNS
-
-			//compile
-			//javac -cp .;nav.jar Navigate.java
-
-			//abbiegen nach links:
-			//java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.46591000 11.15800500 49.466032 11.156306
-
-			//abbiegen nach rechts:
-			//java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.46591000 11.15800500 49.466716 11.157468
-
-			// draw map
-			// java -cp .;nav.jar pp.dorenda.client2.testapp.TestActivity -m webservice;geosrv.informatik.fh-nuernberg.de -c pp.dorenda.client2.additional.UniversalPainter -a Route.txt;s
-
-			// route from Grünreutherstrasse to Kesslerplatz
-			// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.46591000 11.15800500 49.453025 11.093324
-
-
         pwTurns = new PrintWriter(TURNS_TXT);
 
         String strLog = "";
+				boolean temp = false;
 
         for (int i=1;i<route.length; i++) {
 
@@ -133,7 +116,7 @@ public class Route
 						String domainName = Navigate.nd.getDomainName(domainID);
 						int nextDomainID;
 						String nextDomainName;
-						int alpha = Navigate.nd.getNorthAngleTo(linkID);//ich fahre aus dem alten Link raus
+						int alpha = Navigate.nd.getNorthAngleTo(linkID);
 						int beta;
 						int nextLinkID;
 						int differenz;
@@ -143,7 +126,7 @@ public class Route
 								nextLinkID = route[i+1].linkIDToPredecessor;
 								nextDomainID = Navigate.nd.getDomainID(route[i+1].linkIDToPredecessor);
 								nextDomainName = Navigate.nd.getDomainName(nextDomainID);
-								beta = Navigate.nd.getNorthAngleFrom(nextLinkID); //und fahre in den Neuen link rein
+								beta = Navigate.nd.getNorthAngleFrom(nextLinkID);
 								differenz = Math.abs(Math.abs(alpha)-Math.abs(beta));
 
 								if (differenz > 10 && differenz <= 50 ){
@@ -153,30 +136,38 @@ public class Route
 									txt = "scharf ";
 								}
 
-								strLog += "Durchgang " + i + Navigate.eol;
-
 								if (domainName.equals(nextDomainName)) {
-                	strLog += "Bleiben Sie auf der " + nextDomainName + Navigate.eol;
+									if (temp == false){
+										strLog += "Bleiben Sie auf der " + nextDomainName + Navigate.eol;
+										temp = true;
+									}
 								}
 								else if(differenz <= 10){
 									strLog += "Fahren Sie weiter gerade aus auf die " + nextDomainName + Navigate.eol;
+									temp = false;
 								}
 								else if((beta < 0 && alpha < 0)||(beta > 0 && alpha > 0)) {
 									if(alpha > beta){
-										strLog += "Biegen Sie bitte " + txt + "links ab, in die " + nextDomainName + "alpha - beta " + differenz + Navigate.eol;
+										strLog += "Biegen Sie bitte " + txt + "links ab, in " + nextDomainName + Navigate.eol;
 									}
 									else if(alpha < beta) {
-										strLog += "Biegen Sie bitte " + txt + "rechts ab, in die " + nextDomainName + "alpha - beta " + differenz + Navigate.eol;
+										strLog += "Biegen Sie bitte " + txt + "rechts ab, in " + nextDomainName + Navigate.eol;
 									}
+									temp = false;
 								}
 								else if(alpha > 0 && beta < 0){
-										strLog += "Biegen Sie bitte " + txt + " links ab, in die " + nextDomainName + "alpha - beta " + differenz + Navigate.eol;
+										strLog += "Biegen Sie bitte " + txt + " links ab, in " + nextDomainName + Navigate.eol;
+										temp = false;
 								}
 								else if (alpha < 0 && beta > 0){
-										strLog += "Biegen Sie bitte " + txt + " rechts ab, in die " + nextDomainName + "alpha - beta " + differenz + Navigate.eol;
+										strLog += "Biegen Sie bitte " + txt + " rechts ab, in " + nextDomainName + Navigate.eol;
+										temp = false;
 								}
 
             }
+						else {
+							strLog += "Sie haben Ihr Ziel erreicht!";
+						}
          }
 				pwTurns.println(strLog);
         pwTurns.close();
