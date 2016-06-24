@@ -50,14 +50,6 @@ import fu.keys.LSIClassCentre;
 // draw map
 // java -cp .;nav.jar pp.dorenda.client2.testapp.TestActivity -m webservice;geosrv.informatik.fh-nuernberg.de -c pp.dorenda.client2.additional.UniversalPainter -a Route.txt;s
 
-/* TODO:
-- write turns.txt
-- performance: try to avoid explicit casting
-- Roth: MAX_SPEED_FOR_LINEAR_DISTANCE?
-- Roth: calculate f with costs of turns?
-- Roth: default speed as a reason of different turns?
-*/
-
 public class Navigate {
 
   // coordinates for start and destination
@@ -76,12 +68,7 @@ public class Navigate {
   private static double neighborLat_d;
   private static double neighborLon_d;
 
-  // public static double beeLine;
-  //public static double distance;
-  //public static double speed;
-
   public static NavData nd;
-  //public static Spherical spherical;
 
   public static Node lastNode;
   public static Node currentNode;
@@ -89,13 +76,6 @@ public class Navigate {
   public static PriorityQueue<Node> NodePriorityQueue;
 
   private static Route route;
-
-  // debug
-  // public static boolean debug = false;
-  // public static String log = "";
-  // private final static String LOG_TXT = "Log.txt";
-  // public static String eol = System.getProperty("line.separator");
-  // public static PrintWriter pwLog;
 
   public static void main(String[] args) {
 
@@ -124,9 +104,6 @@ public class Navigate {
       stop_lon_d = Double.parseDouble(args[4]);
       stop_lon = Helper.convertCoordToInt(stop_lon_d);
 
-      // debug mode
-      // if(args.length > 5 && args[5].contains("debug")) debug = true;
-
       // get start and destination id
       int crossingIdStart = nd.getNearestCrossing(start_lat, start_lon);
       int crossingIdStop = nd.getNearestCrossing(stop_lat, stop_lon);
@@ -136,48 +113,20 @@ public class Navigate {
 
       if(A_Star(nodeStart, nodeDestination)) {
 
-        // System.out.println("... Route found");
-
         route = new Route();
         route.getNodeCount(currentNode);
-        //System.out.println("Count: " + route.nodeCount);
         route.reverseRoute(nodeStart,currentNode);
 
-        // write route.txt
-      //   if(route.printRoute()) {
-      //     System.out.println("... Route printed");
-      //   }
-      //   else {
-      //     System.out.println("--- Route NOT printed");
-      //   }
-      //
-      //   // write turns.txt
-      //   if(route.printTurns()) {
-      //     System.out.println("... Turns printed");
-      //   }
-      //   else {
-      //     System.out.println("--- Turns NOT printed");
-      //   }
-      }
-      // else {
-      //   System.out.println("No route found!");
-      // }
       route.printRoute();
       route.printTurns();
 
       long stopTime = System.currentTimeMillis();
-      double elapsed = ((stopTime - startTime));
+      long elapsed = ((stopTime - startTime));
 
-      // log += "Elapsed Time: " + stopTime + " - " + startTime + " = " + elapsed + "ms";
       System.out.println("Elapsed Time: " + stopTime + " - " + startTime + " = " + elapsed + "ms");
       // ##########################################
       // stop timer
-
-      // if(debug) {
-      //     pwLog = new PrintWriter(LOG_TXT);
-      //     pwLog.println(log);
-      //     pwLog.close();
-      // }
+}
     }
     catch (Exception e) {
       e.printStackTrace();
@@ -201,17 +150,9 @@ public class Navigate {
 
       // assign least element to currentNode and remove from queue
       currentNode = NodePriorityQueue.remove();
-      // if(debug) {
-      //     log += "+++++ Open Current: " + currentNode.crossingID +
-      //             " ##### Current lat/lon: " + Helper.convertCoordToDouble(currentNode.lat) +
-      //             " " + Helper.convertCoordToDouble(currentNode.lon) + eol;
-      // }
 
       if (currentNode.crossingID == destination.crossingID) {
-        // if(debug) {
-        //     log += eol + "--------------------------------------------------------------------" + eol +
-        //     "Count Expand: " + expandCalls + " ##### remainingElementsInQueue: " + NodePriorityQueue.size() + eol;
-        // }
+
         System.out.println("expandCalls "+ expandCalls);
         return true;
       }
@@ -219,7 +160,6 @@ public class Navigate {
       closedNodeList[currentNode.crossingID] = true;
       expandCalls++;
 
-      // if(debug) log += "----- Close Current crossingID: " + currentNode.crossingID + eol + eol;
     }
     while(NodePriorityQueue.size() > 0);
 
@@ -243,28 +183,13 @@ public class Navigate {
 
       found = false;
 
-      // domain
-      //   if(debug) {
-      // int domainID = nd.getDomainID(currentNode.links[i]);
-      // if(nd.isDomain(domainID)) {
-      //           log += eol + "# Neighbor " + i + ": " + nd.getDomainName(domainID)
-      //           + " ##### LinkID:" + currentNode.links[i] + eol + "----------"
-      //           + " domainID: " + domainID + eol;
-      // }
-      // else {
-      // 	log += "No Domain!" + eol;
-      // }
-      //   }
-
       crossingIDTo = nd.getCrossingIDTo(currentNode.links[i]);
 
       if(nd.isIsolatedCrossiong(crossingIDTo)) {
-        // if(debug) log += "# Isolated " + i + ": To: " + crossingIDTo + eol;
         continue;
       }
 
       if(nd.goesCounterOneway(currentNode.links[i])) {
-        // if(debug) log += "# One Way " + i + ": To: " + crossingIDTo + eol;
         continue;
       }
 
@@ -274,7 +199,6 @@ public class Navigate {
         // is neighbor already open
         if(openNodeList[crossingIDTo] != null) {
 
-          // if(debug) log += "# Found Neighbor Node: " + openNodeList[crossingIDTo] + eol;
           NeighborNode = openNodeList[crossingIDTo];
           found = true;
         }
@@ -290,76 +214,27 @@ public class Navigate {
           NeighborNode = new Node(crossingIDTo, neighborLat_d, neighborLon_d, stop_lat_d, stop_lon_d);
           NeighborNode.links = nd.getLinksForCrossing(crossingIDTo);
           openNodeList[crossingIDTo] = NeighborNode;
-
-          // if(debug) log += "# Open Neighbor: " + NeighborNode.crossingID + eol;
-
-          // h
-          //beeLine = spherical.greatCircleMeters(neighborLat_d,neighborLon_d,stop_lat_d,stop_lon_d);
-          //NeighborNode.setValue_h(Helper.getLinkCostsInSeconds(beeLine, Helper.MAX_SPEED_FOR_LINEAR_DISTANCE));
         }
 
-        // if(debug) log += "Neighbor lat/lon: " + Helper.convertCoordToDouble(NeighborNode.lat) + " " + Helper.convertCoordToDouble(NeighborNode.lon) + eol;
-
-        /*
-        // c = costs from current to neighbor
-        distance = (double) nd.getLengthMeters(currentNode.links[i]);
-
-        speed = (double) nd.getMaxSpeedKMperHours(currentNode.links[i]);
-        if(speed == 0) {
-        speed = Helper.getDefaultSpeed(currentNode,currentNode.links[i]);
-
-        if(debug) log += "DEFAULTSPEED: " + speed + eol;
-      }
-      if(debug) log += "Distance/Speed: " + distance + "/" + speed + eol;
-
-      NeighborNode.setValue_c(Helper.getLinkCostsInSeconds(distance, speed));//currentNode.setValue_c(Helper.getLinkCostsInSeconds(distance, speed));
-      if(debug) log += "c: " + NeighborNode.getValue_c() + eol;//if(debug) log += "c: " + currentNode.getValue_c() + eol;
-      */
       c = NeighborNode.c(currentNode, currentNode.links[i]);
-      // if(debug) log += "c: " + c;
 
-      // g
-      // if(debug) log += "g: " + currentNode.getValue_g() + " + " + NeighborNode.getValue_c() + eol;
-      //if(debug) log += "g: " + currentNode.getValue_g() + " + " + currentNode.getValue_c() + eol;
-      //g = currentNode.getValue_g() + NeighborNode.getValue_c();//g = currentNode.getValue_g() + currentNode.getValue_c();
       g = NeighborNode.g(currentNode, currentNode.links[i]);
 
-      // f
-      // if(debug) log += "f: " + g + " + " + NeighborNode.getValue_h() + eol;
-      //f = g + NeighborNode.getValue_h();
       f = NeighborNode.f(currentNode, currentNode.links[i]);
-
-      // if(debug) log += "if: found=" + found + " && " + f + " > " + NeighborNode.getValue_f() + eol;
 
       // if currentNode exists in openNodeList and f(currentNode) > f(neighbor)
       if(found == true && f >= NeighborNode.getValue_f()) {
-        // if(debug) log += "continue" + eol;
         continue;
       }
       else {
-        /*
-        //currentNode.domainID = nd.getDomainID(currentNode.links[i]);
-        NeighborNode.predecessor = currentNode;
-        NeighborNode.linkIDToPredecessor = nd.getReverseLink(currentNode.links[i]);
-        NeighborNode.domainID = nd.getDomainID(currentNode.links[i]);
-        NeighborNode.setValue_g(g);
-        NeighborNode.setValue_f(f);*/
-
         //new setPredecessor
         NeighborNode.setPredecessor(currentNode, nd.getReverseLink(currentNode.links[i]), c, g, f);
 
         if(found != true) {
           NodePriorityQueue.add(NeighborNode);
-          // if(debug) log += "# Add to Queue: " + NeighborNode.crossingID +
-          // " ##### Predecessor: " + NeighborNode.predecessor.crossingID +
-          // " ##### domainID: " + NeighborNode.domainID +
-          // eol;
         }
       }
     }
-    // else {
-    //           // if(debug) log += "# Neighbor closed: " + crossingIDTo + " ##### lat/lon: " + Helper.convertCoordToDouble(nd.getCrossingLatE6(crossingIDTo)) + " " + Helper.convertCoordToDouble(nd.getCrossingLongE6(crossingIDTo)) + eol;
-    // }
   }
 }
 }

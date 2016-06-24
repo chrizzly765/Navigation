@@ -25,38 +25,27 @@ public class Route
 					lastNode = lastNode.predecessor;
 				}
 				else {
-					//return nodeCount+1;
-					//nodeCount++;
 					return true;
 				}
 			} while(true);
 		}
 
-		// run through nodes and store in array
-		// e.g. nodeCount is 150
-		// route[150] = lastNode
-		// route[149] = lastNode.predecessor
-		// ...
-		// route[0] = startNode
 		public Node[] reverseRoute(Node start, Node lastNode) {
 
 			route = new Node[nodeCount+1];
 			int i=nodeCount;
 			route[i] = lastNode;
 
-			//System.out.println("lat last:" +  lastNode.lat);
 			do {
 				if(lastNode.predecessor != null) {
 
 					route[--i] = lastNode.predecessor;
-					//System.out.println("i:" + i + " Node: " + lastNode.predecessor.lat);
 					if(lastNode.predecessor.crossingID == start.crossingID) {
 						return route;
 					}
 					lastNode = lastNode.predecessor;
 				}
 				else {
-					//if(debug) System.out.println("Exit: " + lastNode);
 					return null;
 				}
 			} while(true);
@@ -75,9 +64,7 @@ public class Route
 			int diff;
 
 			for (int i=0;i<route.length; i++) {
-
-				// TODO: 0 = error
-				// start node has no domainID
+				
 				if(route[i].domainID == 0) {
 					continue;
 				}

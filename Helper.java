@@ -47,15 +47,12 @@ public final class Helper
     lsiClassNr = Navigate.nd.getLSIclass(linkID);
     lsiClass = LSIClassCentre.lsiClassByID(lsiClassNr);
 
-    //String token = lsiClass.classToken;
-    //if(debug) log += "Streettype: " + token + eol;
-
     return mapDefaultSpeed.get(lsiClass.classToken);
   }
 
   public static double getLinkCostsInSeconds(double distance, double speed) {
-    return ((distance * 3600) / (speed * 1000)); //21s, 18s
-    //return ((distance / speed) *  (3600 /1000)); //19s
+    //return ((distance * 3600) / (speed * 1000)); //21s, 18s
+    return ((distance / speed) *  (3600 /1000)); //19s
     //return ((distance/ (speed*1000)) *  3600 ); //19s
   }
 }
