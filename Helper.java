@@ -54,10 +54,8 @@ public final class Helper
   }
 
   public static double getLinkCostsInSeconds(double distance, double speed) {
-
-    // 30km/h = 30000m / 3600s = 8,333m/s
-    // time = distance/speed => 70m/s : 8,333m/s = 8,4s
-    //return (distance / ((speed * 1000) / 3600));
-    return ((distance * 3600) / (speed * 1000));
+    return ((distance * 3600) / (speed * 1000)); //21s, 18s
+    //return ((distance / speed) *  (3600 /1000)); //19s
+    //return ((distance/ (speed*1000)) *  3600 ); //19s
   }
 }

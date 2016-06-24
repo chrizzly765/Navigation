@@ -34,6 +34,10 @@ import fu.keys.LSIClassCentre;
 // route from Chiemsee to Norddeich
 // java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 47.889674 12.417799 53.612192 07.150162
 
+//KREISVERKEHR
+//java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 49.450672 10.998498 49.456790 11.004193
+//
+
 // route from Bodensee to Rügen
 // java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 47.598265 7.650614 54.560074 13.63268
 
@@ -158,6 +162,8 @@ public class Navigate {
       // else {
       //   System.out.println("No route found!");
       // }
+      route.printRoute();
+      route.printTurns();
 
       long stopTime = System.currentTimeMillis();
       double elapsed = ((stopTime - startTime));
