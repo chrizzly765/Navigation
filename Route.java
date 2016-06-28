@@ -30,6 +30,7 @@ public class Route
 			} while(true);
 		}
 
+		//generates route in correct order
 		public Node[] reverseRoute(Node start, Node lastNode) {
 
 			route = new Node[nodeCount+1];
@@ -113,7 +114,7 @@ public class Route
 				beta = Navigate.nd.getNorthAngleFrom(nextLinkID);
 				differenz = Math.abs(Math.abs(alpha)-Math.abs(beta));
 				txt = "";
-
+				
 				if (differenz > 10 && differenz <= 50 ){
 					txt = "leicht ";
 				}

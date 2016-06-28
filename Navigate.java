@@ -9,45 +9,11 @@ import java.util.*;
 import fu.keys.LSIClass;
 import fu.keys.LSIClassCentre;
 
-// Earth Radius
-//import fu.geo.Spherical;
 
-// compile
 // javac -cp .;nav.jar Navigate.java
-
-// run
-// route from Grünreutherstrasse to Kesslerplatz
-// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.46591000 11.15800500 49.453025 11.093324
-
-// coordinates from route.txt
-// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.48431 11.197552 49.474915 11.122614
-
-// route from Laufamholzstrasse to Moritzbergstrasse
-// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC_mittelfranken.CAC 49.46591000 11.15800500 49.465152 11.152112
-
-//route Erlangen Berlin
-// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 49.594275 11.001648 52.416415 13.502733
-
-//route bug fix test
-// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 50.098458 11.697518 50.079110 11.661637
 
 // route from Chiemsee to Norddeich
 // java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 47.889674 12.417799 53.612192 07.150162
-
-//KREISVERKEHR
-//java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 49.450672 10.998498 49.456790 11.004193
-//
-
-// route from Bodensee to Rügen
-// java -Xmx3072M -cp .;nav.jar Navigate CAR_CACHE_de_noCC.CAC 47.598265 7.650614 54.560074 13.63268
-
-// 04.05. ca. 200 Sekunden
-// 06.05. ca. 115 Sekunden (+PriorityQueue, openNodeList == closedNodeList)
-// 06.05. ca. 0,5 Sekunden (+spherical.greatCircleMeters, no outputs!)
-// 13.05. ca. 1,6 Sekunden (+fixed bug, +write route.txt)
-// 15.05. ca. 17 Sekunden ()
-
-// draw map
 // java -cp .;nav.jar pp.dorenda.client2.testapp.TestActivity -m webservice;geosrv.informatik.fh-nuernberg.de -c pp.dorenda.client2.additional.UniversalPainter -a Route.txt;s
 
 public class Navigate {
@@ -87,8 +53,8 @@ public class Navigate {
     try {
 
       nd = new NavData(args[0], true);
+	  
       // start timer
-      // ##########################################
       long startTime = System.currentTimeMillis();
 
       // in case of speed is not given by the geo db
@@ -119,14 +85,13 @@ public class Navigate {
 
       route.printRoute();
       route.printTurns();
-
+	  
+	  // stop timer
       long stopTime = System.currentTimeMillis();
       long elapsed = ((stopTime - startTime));
 
       System.out.println("Elapsed Time: " + stopTime + " - " + startTime + " = " + elapsed + "ms");
-      // ##########################################
-      // stop timer
-}
+	  }
     }
     catch (Exception e) {
       e.printStackTrace();
@@ -145,26 +110,17 @@ public class Navigate {
 
     openNodeList[start.crossingID] = start;
 
-    int expandCalls = 0;
     do {
-
       // assign least element to currentNode and remove from queue
       currentNode = NodePriorityQueue.remove();
 
       if (currentNode.crossingID == destination.crossingID) {
-
-        System.out.println("expandCalls "+ expandCalls);
         return true;
       }
       expand(openNodeList, closedNodeList, currentNode);
       closedNodeList[currentNode.crossingID] = true;
-      expandCalls++;
-
     }
     while(NodePriorityQueue.size() > 0);
-
-
-
     return false;
   }
 

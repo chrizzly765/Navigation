@@ -55,13 +55,8 @@ public class Node implements Comparator<Node>{
 	}
 
 	/**
-	* sets costs of predecessor to node
+	* sets costs of node pre to node
 	*/
-	private void c()
-	{
-		c = c(predecessor, linkIDToPredecessor);
-	}
-
 	public double c(Node pre, int linkIDToPre){
 		if (pre == null){
 			return 0;
@@ -81,17 +76,15 @@ public class Node implements Comparator<Node>{
 		if(speed == 0.0)
 		{
 			//get speedlimitation from type of road
-			speed = Helper.getDefaultSpeed(pre,linkIDToPre);
+			speed = Helper.getDefaultSpeed(linkIDToPre);
 
 		}
 		return speed;
 	}
+	
 	/**
-	* sets costs of start to node
+	* sets costs of start to node over node pre
 	*/
-	private void g(){
-		g = g(predecessor, linkIDToPredecessor);
-	}
 	public double g(Node pre, int linkIDToPre){
 		if (pre ==null)
 		{
@@ -101,12 +94,10 @@ public class Node implements Comparator<Node>{
 			return pre.getValue_g() + c(pre, linkIDToPre);
 		}
 	}
+	
 	/**
-	* sets estimated costs of start to end by crossing node
+	* sets estimated costs of start to end over node pre and crossing node
 	*/
-	private void f(){
-		f = f(predecessor, linkIDToPredecessor);
-	}
 	public double f(Node pre, int linkIDToPre){
 		return g(pre, linkIDToPre) + h;
 	}
@@ -120,12 +111,15 @@ public class Node implements Comparator<Node>{
 			predecessor = newPredecessor;
 			linkIDToPredecessor = newLinkIDToPredecessor;
 			domainID = Navigate.nd.getDomainID(Navigate.nd.getReverseLink(linkIDToPredecessor));
-			c();
-			g();
-			f();
+			c = c(predecessor, linkIDToPredecessor);
+			g = g(predecessor, linkIDToPredecessor);
+			f = f(predecessor, linkIDToPredecessor);
 		}
 
 	}
+	/**
+	* sets new predecessor and updates all depending values with known c, g, f
+	*/
 	public void setPredecessor(Node newPredecessor, int newLinkIDToPredecessor, double newC, double newG, double newF) {
 		if(predecessor == null || predecessor.crossingID != newPredecessor.crossingID)
 		{
@@ -137,14 +131,5 @@ public class Node implements Comparator<Node>{
 			this.f = newF;
 		}
 
-	}
-
-	public String toString() {
-		return "crossingID: " + this.crossingID +
-		" linkIDToPredecessor: " + this.linkIDToPredecessor +
-		" C: " + this.getValue_c() +
-		" H: " +this.getValue_h() +
-		" G: " +this.getValue_g() +
-		" F: " +this.getValue_f();
 	}
 }

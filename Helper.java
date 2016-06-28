@@ -21,7 +21,9 @@ public final class Helper
     return (double)(coordinate/FACTOR);
   }
 
-  // initialize map with default speed
+  /* 
+   * initialize map with default speed
+  */
   public static void setDefaultSpeed() {
 
     mapDefaultSpeed.put("BAUSTELLE_VERKEHR", 30);
@@ -41,8 +43,8 @@ public final class Helper
     mapDefaultSpeed.put("ANSCHLUSSSTELLE_TERTIAER", 20);
     mapDefaultSpeed.put("KREISVERKEHR", 20);
   }
-
-  public static double getDefaultSpeed(Node currentNode, int linkID) {
+  
+  public static double getDefaultSpeed(int linkID) {
 
     lsiClassNr = Navigate.nd.getLSIclass(linkID);
     lsiClass = LSIClassCentre.lsiClassByID(lsiClassNr);
@@ -51,8 +53,6 @@ public final class Helper
   }
 
   public static double getLinkCostsInSeconds(double distance, double speed) {
-    //return ((distance * 3600) / (speed * 1000)); //21s, 18s
-    return ((distance / speed) *  (3600 /1000)); //19s
-    //return ((distance/ (speed*1000)) *  3600 ); //19s
+    return ((distance / speed) *  (3600 /1000));
   }
 }
