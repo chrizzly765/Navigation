@@ -2,57 +2,56 @@ import java.util.*;
 
 // Street Types
 import fu.keys.LSIClass;
-import fu.keys.LSIClassCentre;
 
-public final class Helper
-{
-  public final static double FACTOR = 1000000.0;
-  public final static int MAX_SPEED_FOR_LINEAR_DISTANCE = 140;
-  public static Map<String, Integer> mapDefaultSpeed = new HashMap<String, Integer>();
+public final class Helper {
 
-  public static int lsiClassNr;
-  public static LSIClass lsiClass;
+    public final static double FACTOR = 1000000.0;
+    public final static int MAX_SPEED_FOR_LINEAR_DISTANCE = 140;
+    public static int[] mapDefaultSpeed;
 
-  public static int convertCoordToInt(double coordinate) {
-    return (int)(coordinate*FACTOR);
-  }
+    public static int lsiClassNr;
+    public static LSIClass lsiClass;
 
-  public static double convertCoordToDouble(int coordinate) {
-    return (double)(coordinate/FACTOR);
-  }
+    public static int convertCoordToInt(double coordinate) {
+        return (int)(coordinate*FACTOR);
+    }
 
-  /* 
-   * initialize map with default speed
-  */
-  public static void setDefaultSpeed() {
+    public static double convertCoordToDouble(int coordinate) {
+        return (double)(coordinate/FACTOR);
+    }
 
-    mapDefaultSpeed.put("BAUSTELLE_VERKEHR", 30);
-    mapDefaultSpeed.put("AUTOBAHN", MAX_SPEED_FOR_LINEAR_DISTANCE); //130
-    mapDefaultSpeed.put("KRAFTFAHRSTRASSE", 100);//80
-    mapDefaultSpeed.put("LANDSTRASSE", 100); //100
-    mapDefaultSpeed.put("BUNDESSTRASSE", 100); //50
-    mapDefaultSpeed.put("LANDSTRASSE_SEKUNDAER", 70);
-    mapDefaultSpeed.put("LANDSTRASSE_TERTIAER", 50);
-    mapDefaultSpeed.put("LANDSTRASSE_UNKLASSIFIZIERT", 40);
-    mapDefaultSpeed.put("INNERORTSTRASSE", 50); //50
-    mapDefaultSpeed.put("VERKEHRSBERUHIGTER_BEREICH", 15);
-    mapDefaultSpeed.put("ANSCHLUSSSTELLE_AUTOBAHN", 80);
-    mapDefaultSpeed.put("ANSCHLUSSSTELLE_KRAFTFAHRSTRASSE", 50);
-    mapDefaultSpeed.put("ANSCHLUSSSTELLE_BUNDESSTRASSE", 50);
-    mapDefaultSpeed.put("ANSCHLUSSSTELLE_SEKUNDAER", 30);
-    mapDefaultSpeed.put("ANSCHLUSSSTELLE_TERTIAER", 20);
-    mapDefaultSpeed.put("KREISVERKEHR", 20);
-  }
-  
-  public static double getDefaultSpeed(int linkID) {
+    /*
+    * initialize map with default speed
+    */
+    public static void setDefaultSpeed() {
 
-    lsiClassNr = Navigate.nd.getLSIclass(linkID);
-    lsiClass = LSIClassCentre.lsiClassByID(lsiClassNr);
+        // ADDED
+        mapDefaultSpeed = new int[34176001];
+        mapDefaultSpeed[32711000] = 30;
+        mapDefaultSpeed[34110000] = MAX_SPEED_FOR_LINEAR_DISTANCE;
+        mapDefaultSpeed[34120000] = 100;
+        mapDefaultSpeed[34130000] = 100;
+        mapDefaultSpeed[34131000] = 100;
+        mapDefaultSpeed[34132000] = 70;
+        mapDefaultSpeed[34133000] = 50;
+        mapDefaultSpeed[34134000] = 40;
+        mapDefaultSpeed[34141000] = 50;
+        mapDefaultSpeed[34142000] = 15;
+        mapDefaultSpeed[34171000] = 80;
+        mapDefaultSpeed[34172000] = 50;
+        mapDefaultSpeed[34173000] = 50;
+        mapDefaultSpeed[34174000] = 30;
+        mapDefaultSpeed[34175000] = 20;
+        mapDefaultSpeed[34176000] = 20;
+    }
 
-    return mapDefaultSpeed.get(lsiClass.classToken);
-  }
+    public static double getDefaultSpeed(int linkID) {
 
-  public static double getLinkCostsInSeconds(double distance, double speed) {
-    return ((distance / speed) *  (3600 /1000));
-  }
+        lsiClassNr = Navigate.nd.getLSIclass(linkID);
+        return mapDefaultSpeed[lsiClassNr];
+    }
+
+    public static double getLinkCostsInSeconds(double distance, double speed) {
+        return ((distance / speed) *  (3600 /1000));
+    }
 }

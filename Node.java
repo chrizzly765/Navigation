@@ -18,7 +18,7 @@ public class Node implements Comparator<Node>{
 	private double speed;
 	private double distance;
 
-	public static Spherical spherical;
+	//public static Spherical spherical;
 
 	public Node(int _crossingID, double _lat, double _lon, double stop_lat_d, double stop_lon_d) {
 
@@ -26,7 +26,9 @@ public class Node implements Comparator<Node>{
 		this.c = 0;
 		this.f = 0;
 		this.g = 0;
-		this.h = Helper.getLinkCostsInSeconds(spherical.greatCircleMeters(_lat, _lon, stop_lat_d, stop_lon_d), Helper.MAX_SPEED_FOR_LINEAR_DISTANCE);
+		//this.h = Helper.getLinkCostsInSeconds(spherical.greatCircleMeters(_lat, _lon, stop_lat_d, stop_lon_d), Helper.MAX_SPEED_FOR_LINEAR_DISTANCE);
+		// ADDED
+		this.h = Helper.getLinkCostsInSeconds(Spherical.greatCircleMeters(_lat, _lon, stop_lat_d, stop_lon_d), Helper.MAX_SPEED_FOR_LINEAR_DISTANCE);
 	}
 
 	@Override
@@ -81,7 +83,7 @@ public class Node implements Comparator<Node>{
 		}
 		return speed;
 	}
-	
+
 	/**
 	* sets costs of start to node over node pre
 	*/
@@ -94,7 +96,7 @@ public class Node implements Comparator<Node>{
 			return pre.getValue_g() + c(pre, linkIDToPre);
 		}
 	}
-	
+
 	/**
 	* sets estimated costs of start to end over node pre and crossing node
 	*/
