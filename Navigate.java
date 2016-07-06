@@ -42,10 +42,9 @@ public class Navigate {
 
     public static void main(String[] args) {
 
-        // ADDED
         // minimium 5 arguments
         if (args.length < 5) {
-            System.out.println("usage Navigate <navcache file> <lat_start> <lon_start> <lat_stop> <lon_stop>");
+            System.out.println("error! usage: Navigate <navcache file> <lat_start> <lon_start> <lat_stop> <lon_stop>");
             System.exit(1);
         }
 
@@ -74,7 +73,7 @@ public class Navigate {
             int crossingIdStop = nd.getNearestCrossing(stop_lat, stop_lon);
 
             Node nodeStart =       new Node(crossingIdStart, start_lat_d, start_lon_d, stop_lat_d, stop_lon_d);
-            Node nodeDestination = new Node(crossingIdStop,  stop_lat_d,  stop_lon_d, stop_lat_d, stop_lon_d);
+            Node nodeDestination = new Node(crossingIdStop,  stop_lat_d,  stop_lon_d,  stop_lat_d, stop_lon_d);
 
             if(A_Star(nodeStart, nodeDestination)) {
 
@@ -91,26 +90,27 @@ public class Navigate {
 
                 System.out.println("Zeit: " + elapsed + "ms");
             }
-            // ADDED
             else {
-                System.out.println("Keine Route möglich!");
+                System.out.println("no route possible!");
             }
         }
-        // ADDED
         catch (NumberFormatException nfe) {
-            System.out.println("Falsches Format!");
+            System.out.println("wrong format!");
         }
         catch (Exception e) {
-            System.out.println("Unerwarteter Fehler!");
+            System.out.println("unexpectetd error!");
         }
     }
 
     private static boolean A_Star(Node start, Node destination){
-
-        // ADDED
         // check if crossingID is invalid
         if(start.crossingID == -1 || destination.crossingID == -1) {
-            System.out.println("Keine crossingID gefunden");
+			if(start.crossingID == -1) {
+				System.out.println("no crossingID found for starting point!");
+			}
+			if(destination.crossingID == -1) {
+				System.out.println("no crossingID found for destination!");
+			}
             System.exit(1);
         }
 

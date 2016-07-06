@@ -18,16 +18,12 @@ public class Node implements Comparator<Node>{
 	private double speed;
 	private double distance;
 
-	//public static Spherical spherical;
-
 	public Node(int _crossingID, double _lat, double _lon, double stop_lat_d, double stop_lon_d) {
 
 		this.crossingID = _crossingID;
 		this.c = 0;
 		this.f = 0;
 		this.g = 0;
-		//this.h = Helper.getLinkCostsInSeconds(spherical.greatCircleMeters(_lat, _lon, stop_lat_d, stop_lon_d), Helper.MAX_SPEED_FOR_LINEAR_DISTANCE);
-		// ADDED
 		this.h = Helper.getLinkCostsInSeconds(Spherical.greatCircleMeters(_lat, _lon, stop_lat_d, stop_lon_d), Helper.MAX_SPEED_FOR_LINEAR_DISTANCE);
 	}
 

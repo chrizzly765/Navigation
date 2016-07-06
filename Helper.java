@@ -24,10 +24,8 @@ public final class Helper {
     * initialize map with default speed
     */
     public static void setDefaultSpeed() {
-
-        // ADDED
         mapDefaultSpeed = new int[34176001];
-        mapDefaultSpeed[32711000] = 30;
+        mapDefaultSpeed[32711000] = 30; 
         mapDefaultSpeed[34110000] = MAX_SPEED_FOR_LINEAR_DISTANCE;
         mapDefaultSpeed[34120000] = 100;
         mapDefaultSpeed[34130000] = 100;

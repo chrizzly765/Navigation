@@ -100,7 +100,9 @@ public class Route
 			boolean temp = false;
 			int linkID, domainID, nextDomainID, nextLinkID, alpha, beta, differenz;
 			String domainName, nextDomainName, txt;
-
+			
+			//start domain
+			strLog += "Sie sind auf der " + Navigate.nd.getDomainName(Navigate.nd.getDomainID(route[1].linkIDToPredecessor)) + eol;
 
 			for (int i=1;i<route.length-1; i++) {
 
