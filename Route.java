@@ -102,6 +102,8 @@ public class Route
 			String domainName, nextDomainName, txtStaerke, txtLR, ziel;
 			ziel = Navigate.nd.getDomainName(Navigate.nd.getDomainID(route[route.length-1].linkIDToPredecessor));
 
+			strLog += "Sie befinden sich auf der " +  Navigate.nd.getDomainName(Navigate.nd.getDomainID(route[1].linkIDToPredecessor)) + eol;
+
 			for (int i=1;i<route.length-1; i++) {
 
 				linkID = route[i].linkIDToPredecessor;
@@ -120,12 +122,17 @@ public class Route
 				ergebnis = beta - alpha;
 
 				if (ergebnis >= 0){
-					txtLR = "rechts ab, in ";
 					differenz = ergebnis - 180;
 				}
 				else if (ergebnis < 0){
-					txtLR = "links ab, in ";
 					differenz = ergebnis + 180;
+				}
+
+				if (differenz >= 0){
+					txtLR = "links ab, in ";
+				}
+				else{
+					txtLR = "rechts ab, in ";
 				}
 
 				//differenz
@@ -150,7 +157,7 @@ public class Route
 						tmp = false;
 				}
 				else {
-					strLog += "Biegen Sie bitte " + txtStaerke + txtLR + nextDomainName + eol;
+					strLog += " alpha "+ alpha + " beta " + beta + " differenz " + differenz + "Biegen Sie bitte " + txtStaerke + txtLR + nextDomainName + eol;
 					tmp = false;
 				}
 			}
